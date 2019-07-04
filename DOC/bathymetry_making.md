@@ -1,1 +1,1 @@
-# Bathymetry for eNATL36 et variant
+# Making the bathymetry for the eNATL36X model configuration.
