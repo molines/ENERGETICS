@@ -1,5 +1,5 @@
-# eNATL36
-North Atlantic 1/36 model configuration 
+# ENERGETICS
+ This is a computing Great Challenge on Jean Zay supercomputer aiming at runing a ocean/atmosphere coupled system with Ocean configuration at 1/36 deg, and an atmosphere at 1/12 on a North Atlantic domain.
 
 Configuration prepared in order to be coupled with WRF at 1/12 degree.
 
