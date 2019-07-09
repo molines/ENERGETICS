@@ -26,6 +26,22 @@ The region was slightly larger than the targetted grid and is refered as version
 
  This produced `eNATL36X_coordinates_v2.0.nc` file, which is used for creating the bathymetry (`create_bathy.exe`)
 
+#### *Resizing of the grid*
+  In order to optimize the size of the domain, we extract a subdomain from domain v2.0. We aim at having the final domain in such a way that a coarsening of the horizontal mesk by a factor of 3x3 
+leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3 :
+
+  ```
+  ncks -F -d  x,39,5054 -d y,3,3749  V2-file v3-file
+  ```
+
+  Doing so, gridsize is 5016 x 3747 and matching points with ORCA12 are:  
+
+  ```
+  G36(   2,   2) = ORCA12(2271, 1364)
+  G36(5015,3746) = ORCA12(3942, 2612)
+  ```
+
+
 ### Bathymetry
   Bathymetry is created with the nesting tools (`create_bathy.exe`), using the following namelist:
 
@@ -56,6 +72,8 @@ The region was slightly larger than the targetted grid and is refered as version
 
 
 ### Vertical grid 
+
+### Domain_cfg file
 
 
 ## Atmosphere
