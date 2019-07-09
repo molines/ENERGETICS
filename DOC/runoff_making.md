@@ -1,5 +1,5 @@
 # Preparing runoff file for eNATL36X
-  In this simulation, we still emulate the river runoff as a precipitation spread over the rivermouth. This procedure requires to have a 2D file with 2 variables: (1) **sorunoff**  giving the amount of 'precip' (kg/m2/s) to add at the rivermouth. This sorunoff variable is in general a monthly climatology. (2)  **socoefr** representing the rivermouths and used as a mask field for specific actions such as, for example, shutting off the SSS restoring on the rivermouth. For historical reason this socoefr variable has values between 0 and 0.5 (In fact either 0 or 0.5).
+  In this simulation, we still emulate the river runoff as a precipitation spread over the rivermouth. This procedure requires to have a 2D file with 2 variables: (1) **sorunoff**  giving the amount of *precip* (kg/m2/s) to add at the rivermouth. This sorunoff variable is in general a monthly climatology. (2)  **socoefr** representing the rivermouths and used as a mask field for specific actions such as, for example, shutting off the SSS restoring on the rivermouth. For historical reason this socoefr variable has values between 0 and 0.5 (In fact either 0 or 0.5).
 
 In this document we present the procedure used for producing the runoff file. ( It is almost the same procedure than the one used in eNATL60, but with some variant). In order not to spread the different pieces of code used for this purpose, all new code are still in the [eNATL60/TOOLS/](https://github.com/molines/blob/master/eNATL60/TOOLS) repository.
 
@@ -123,4 +123,15 @@ In this document we present the procedure used for producing the runoff file. ( 
   * for eNATL60 we end up with eNATL60_runoff_3.1.3.nc file. Rev 3 refer to the domain of the simulation. Rev 3.1 refer to modifications of the bathymetry on the same domain. rev 3.1.3 is the third iteration of the runoff corresponding to 3.1 bathymetric file.
 
 ### Special procedure for Greenland Runoff.
-  We start from CREG12 runoff file (courtesy of Claude Talandier, LOPS), which was elaborate from J. Bamber data (Ref ?). Both climatological data and internual data were provided ( and Greenland runoff show a tremendous positive trend since the late 90's), but so far we have only worked out the climatology.
+  We start from CREG12 runoff file (courtesy of Claude Talandier, LOPS), which was elaborate from J. Bamber data (Ref ?). Both climatological data and internual data were provided ( and Greenland runoff show a tremendous positive trend since the late 90's), but so far we have only worked out the climatology.  
+#### *Fit the common points between CREG12 and eNATL36X (T points)*
+
+  ```
+  CREG12(1:1580,1:913) = eNATL36X(193:4930, 1351:4087)
+
+   ==> eCREG12 : ncks -F -d x,1,1580 -d y 1,913  CREG12 eCREG12
+   ==> eCREG36 : ncks -F -d x,192,4931 -d y,1350,4085 eNATL36X  eCREG36
+  ```
+  A program ([rnf_12_36.exe](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_12_36.f90)) project the eCREG12 data on eCREG36 by expanding
+one eCREG12 grid cell on 9 eCREG36 grid cells. 
+  A combination tmask+2*socoefr shows the points where eCREG36 runoff fall on eNATL36X land points
