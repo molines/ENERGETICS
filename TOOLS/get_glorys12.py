@@ -16,9 +16,9 @@ src_set="glorys12v1-monthly"
 # define zoom  ( take care of index starting from 0 ! )
 tgt_name="eNATLYS12-v1"
 imin=2266-1
-imax=3979-1
+imax=3979
 jmin=1320-1
-jmax=2745-1
+jmax=2745
 
 time=145
 tag="y2004m01.1m"
@@ -35,7 +35,7 @@ if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     print "open "+url+dtaset
     # 2 - Select area - time
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).sossheig
     print "selected area: ", imin, imax, jmin, jmax
     # 3 - Write on disk
     ext_ind.to_netcdf(fileout)
@@ -53,7 +53,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).votemper
     ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
@@ -66,7 +66,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vosaline
     ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
@@ -79,7 +79,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vozocrtx
     ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
@@ -92,7 +92,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vomecrty
     ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
@@ -104,7 +104,7 @@ fileout=tgt_name+"_"+tag+"_"+typset+".nc"
 
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
-    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=time)
+    ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1))
     ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
