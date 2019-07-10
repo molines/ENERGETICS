@@ -1,4 +1,4 @@
-# BDY making-of document
+# BDY making-of document (and initial conditions).
 
   * 4 open boundaries : South, North, Hudson, Baltic.
   * For efficiency, Northern boundary might be divided into 2 parts (West : Baffin bay, East: Gin seas).
@@ -11,6 +11,15 @@
 ## Getting the GLORYS12 data.
 ### Data request made at Mercator service desk:
   All index refer to ORCA12 horizontal grid, starting at (1,1).
+
+#### ***_INITIAL CONDITIONS_***
+   Monthly mean of January,2004
+
+   ```
+   IMIN IMAX JMIN JMAX
+   2266 3979 1320 2745
+   ```
+
 #### ***_SOUTH BOUNDARY_***
 
    ```
