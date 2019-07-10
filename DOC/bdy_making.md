@@ -43,8 +43,13 @@
    3496 3574 2289 2419
    ```
 
-### Data extaction
+### Data extraction
   According to the evolution of the services at Mercator, GLORYS12v1 data on the native grid are available on the 
 [Mercator opendap server](http://tds.mercator-ocean.fr/thredds/catalog.html). The user must do the extraction by itself ( :( ).
  
-  A python script example has been provided: [recup_barnier.py](../TOOLS/recup_barnier.py). This script used `xarray` module. Some typos were corrected (*i.e.* `decode_cf` instead of `cf_decode`) and a more generic version was created [get_glorys12.py](../TOOLS/get_glorys12.py)
+  A python script example has been provided: [recup_barnier.py](../TOOLS/recup_barnier.py). This script used `xarray` module. Some typos were corrected (*i.e.* `decode_cf` instead of `cf_decode`) and a more generic version was created [get_glorys12.py](../TOOLS/get_glorys12.py). Unfortunatly, this script is not working already (MemoryError or DataSet error randomly). 
+
+### Processing GLORYS12 extraction:
+ * Use [SOSIE](https://github.com/brodeau/sosie) for 3D interpolation on eNATL36X grid or subgrid (BDY). 
+ * Build the `bdy_coordinates` files.
+ * Build the `bdy data` files.
