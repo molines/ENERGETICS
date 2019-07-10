@@ -15,10 +15,10 @@ src_set="glorys12v1-monthly"
 
 # define zoom  ( take care of index starting from 0 ! )
 tgt_name="eNATLYS12-v1"
-imin=2266
-imax=3979
-jmin=1320
-jmax=2745
+imin=2266-1
+imax=3979-1
+jmin=1320-1
+jmax=2745-1
 
 time=145
 tag="y2004m01.1m"
