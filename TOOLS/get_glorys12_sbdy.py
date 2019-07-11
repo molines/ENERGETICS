@@ -26,7 +26,7 @@ jmax=1376
 
 t1=4411 ####  01/01/2004
 
-for year in range(2004,2005) :
+for year in range(2005,2016) :
   for month in range(1,13) :
      ndays=calendar.monthrange(year,month)[1]
      print ("y%4dm%02d : %02d " % ( year,month, ndays))
