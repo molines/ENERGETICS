@@ -45,7 +45,7 @@ for year in range(2004,2016) :
         print "open "+url+dtaset
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).sossheig
         print "selected area: ", imin, imax, jmin, jmax
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
@@ -58,7 +58,7 @@ for year in range(2004,2016) :
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).votemper
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
@@ -71,7 +71,7 @@ for year in range(2004,2016) :
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).vosaline
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
@@ -84,7 +84,7 @@ for year in range(2004,2016) :
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).vozocrtx
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
@@ -97,7 +97,7 @@ for year in range(2004,2016) :
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).vomecrty
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
@@ -109,7 +109,7 @@ for year in range(2004,2016) :
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
         ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2))
-        ext_ind.to_netcdf(fileout)
+        ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
 
