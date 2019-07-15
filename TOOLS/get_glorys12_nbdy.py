@@ -18,6 +18,7 @@ src_set="glorys12v1-daily"
 
 # define zoom  ( take care of index starting from 0 ! )
 tgt_name="eNBDY12-v1"
+
 #  2758 3514 2561 2646
 imin=2758-1
 imax=3514
@@ -26,7 +27,7 @@ jmax=2646
 
 t1=4411 ####  01/01/2004
 
-for year in range(2004,2008) :
+for year in range(2004,2016) :
   for month in range(1,13) :
      ndays=calendar.monthrange(year,month)[1]
      print ("y%4dm%02d : %02d " % ( year,month, ndays))
@@ -35,9 +36,11 @@ for year in range(2004,2008) :
 
      t2=t1+ndays
 
+     # GRID 2D
      typset="grid2D"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+typset+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -53,6 +56,7 @@ for year in range(2004,2008) :
      var="votemper"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays-1
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -66,6 +70,7 @@ for year in range(2004,2008) :
      var="vosaline"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -79,6 +84,7 @@ for year in range(2004,2008) :
      var="vozocrtx"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays-1
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -92,6 +98,7 @@ for year in range(2004,2008) :
      var="vomecrty"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -104,6 +111,7 @@ for year in range(2004,2008) :
      typset="icemod"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+typset+".nc"
+     t2=t1+ndays-1   # correction for missing date in Mercator data set
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -112,4 +120,4 @@ for year in range(2004,2008) :
 
      print fileout+"  done"
 
-     t1=t2
+     t1=t1+ndays

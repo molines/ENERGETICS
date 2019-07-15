@@ -35,9 +35,11 @@ for year in range(2004,2016) :
 
      t2=t1+ndays
 
+     # GRID 2D
      typset="grid2D"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+typset+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -53,6 +55,7 @@ for year in range(2004,2016) :
      var="votemper"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays-1
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -66,6 +69,7 @@ for year in range(2004,2016) :
      var="vosaline"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -79,6 +83,7 @@ for year in range(2004,2016) :
      var="vozocrtx"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays-1
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -92,6 +97,7 @@ for year in range(2004,2016) :
      var="vomecrty"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
+     t2=t1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -104,6 +110,7 @@ for year in range(2004,2016) :
      typset="icemod"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+typset+".nc"
+     t2=t1+ndays-1   # correction for missing date in Mercator data set
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
@@ -112,4 +119,4 @@ for year in range(2004,2016) :
 
      print fileout+"  done"
 
-     t1=t2
+     t1=t1+ndays
