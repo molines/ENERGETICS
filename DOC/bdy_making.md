@@ -21,6 +21,7 @@
    ```
 
 #### ***_SOUTH BOUNDARY_***
+  All boundary data come from glorys12-v1 daily output.
 
    ```
     40W 15E 11S 5S
@@ -56,7 +57,11 @@
   According to the evolution of the services at Mercator, GLORYS12v1 data on the native grid are available on the 
 [Mercator opendap server](http://tds.mercator-ocean.fr/thredds/catalog.html). The user must do the extraction by itself ( :( ).
  
-  A python script example has been provided: [recup_barnier.py](../TOOLS/recup_barnier.py). This script used `xarray` module. Some typos were corrected (*i.e.* `decode_cf` instead of `cf_decode`) and a more generic version was created [get_glorys12.py](../TOOLS/get_glorys12.py). Unfortunatly, this script is not working already (MemoryError or DataSet error randomly). 
+  A python script example has been provided: [recup_barnier.py](../TOOLS/recup_barnier.py). This script used `xarray` module. Some typos were corrected (*i.e.* `decode_cf` instead of `cf_decode`) and a more generic version was created [get_glorys12.py](../TOOLS/get_glorys12.py). Unfortunatly, this script is not working already (MemoryError or DataSet error randomly).   
+ The extraction scripts were finally improved to make the extraction as automatic as possible.
+  * Server is unstable and requires multiple submit of the command in order to get through !
+  * There is a time shift of 1 day for votemper, vomecrty and icemod when looking at 2004-01-01 (probably 1 missing day in the past dates).
+  * Correction performed in order to have all the variables in the same time frame. 
 
 ### Processing GLORYS12 extraction:
  * Use [SOSIE](https://github.com/brodeau/sosie) for 3D interpolation on eNATL36X grid or subgrid (BDY). 
