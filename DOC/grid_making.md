@@ -73,6 +73,56 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
 
 ### Vertical grid 
 
+  We wil take 150 levels already tested by P. Colombo. The corresponding `namdom` block of namelist is :
+
+  ```
+  !-----------------------------------------------------------------------
+  &namdom        !   space and time domain (bathymetry, mesh, timestep)
+  !-----------------------------------------------------------------------
+       nn_bathy    =    1      !  compute (=0) or read (=1) the bathymetry file
+       rn_bathy    =    0.     !  value of the bathymetry. if (=0) bottom flat at jpkm1
+       nn_closea   =    0      !  remove (=0) or keep (=1) closed seas and lakes (ORCA)
+       nn_msh      =    0      !  create (/=0) a mesh file(s) or not (=0)
+                               !  if not 0 can be in [1 - 6 ] for drakkar usually 6
+       rn_hmin     =   -3.     !  min depth of the ocean (>0) or min number of ocean level (<0)
+       rn_e3zps_min=   25.     !  partial step thickness is set larger than the minimum of
+       rn_e3zps_rat=    0.2    !  rn_e3zps_min and rn_e3zps_rat*e3t, with 0<rn_e3zps_rat<1
+                               !
+       rn_rdt      =  300.     !  time step for the dynamics (and tracer if nn_acc=0)
+       rn_atfp     =    0.1    !  asselin time filter parameter
+       nn_acc      =    0      !  acceleration of convergence : =1      used, rdt < rdttra(k)
+                                     !                          =0, not used, rdt = rdttra
+       rn_rdtmin   = 1080.     !  minimum time step on tracers (used if nn_acc=1)
+       rn_rdtmax   = 1080.     !  maximum time step on tracers (used if nn_acc=1)
+       rn_rdth     =  800.     !  depth variation of tracer time step  (used if nn_acc=1)
+       ln_crs      = .false.      !  Logical switch for coarsening module
+       jphgr_msh   =       0               !  type of horizontal mesh
+                                           !  = 0 curvilinear coordinate on the sphere read in coordinate.nc
+                                           !  = 1 geographical mesh on the sphere with regular grid-spacing
+                                           !  = 2 f-plane with regular grid-spacing
+                                           !  = 3 beta-plane with regular grid-spacing
+                                           !  = 4 Mercator grid with T/U point at the equator
+       ppglam0     =  999999.d0            !  longitude of first raw and column T-point (jphgr_msh = 1)
+       ppgphi0     =  999999.d0            ! latitude  of first raw and column T-point (jphgr_msh = 1)
+       ppe1_deg    =  999999.d0            !  zonal      grid-spacing (degrees)
+       ppe2_deg    =  999999.d0            !  meridional grid-spacing (degrees)
+       ppe1_m      =  999999.d0            !  zonal      grid-spacing (degrees)
+       ppe2_m      =  999999.d0            !  meridional grid-spacing (degrees)
+       ppsur       =  -2013.96079017d0     !  ORCA r4, r2 and r05 coefficients
+       ppa0        =    42.8600419214d0    ! (default coefficients)
+       ppa1        =   -15.4142803532d0    !
+       ppkth       =   184.2121644d0       !
+       ppacr       =    80.00000000d0      !
+       ppdzmin     =        999999.d0      !  Minimum vertical spacing
+       pphmax      =        999999.d0      !  Maximum depth
+       ldbletanh   =           .TRUE.      !  Use/do not use double tanf function for vertical coordinates
+       ppa2        =  57.857101458d0       !  Double tanh function parameters
+       ppkth2      =  96.05978744d0        !
+       ppacr2      =  39.00000000d0        !
+  /
+  ```
+
+
 ### Domain_cfg file
 
 
