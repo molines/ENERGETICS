@@ -56,11 +56,12 @@ for year in range(2004,2016) :
      var="votemper"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
-     t2=t1+ndays-1
+     tt1=t1-1
+     t2=tt1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
-        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).votemper
+        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(tt1,t2)).votemper
         ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
@@ -84,11 +85,12 @@ for year in range(2004,2016) :
      var="vozocrtx"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+var+".nc"
-     t2=t1+ndays-1
+     tt1=t1-1
+     t2=tt1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
-        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2)).vozocrtx
+        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(tt1,t2)).vozocrtx
         ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
@@ -111,11 +113,12 @@ for year in range(2004,2016) :
      typset="icemod"
      dtaset=src_set+"-"+typset
      fileout=tgt_name+"_"+tag+"_"+typset+".nc"
-     t2=t1+ndays-1   # correction for missing date in Mercator data set
+     tt1=t1-1
+     t2=tt1+ndays
 
      if not os.path.isfile(fileout):
         data = xr.open_dataset(url+dtaset,decode_cf=True)
-        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(t1,t2))
+        ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(tt1,t2))
         ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
 
      print fileout+"  done"
