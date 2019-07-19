@@ -123,8 +123,9 @@ In this document we present the procedure used for producing the runoff file. ( 
   * for eNATL60 we end up with eNATL60_runoff_3.1.3.nc file. Rev 3 refer to the domain of the simulation. Rev 3.1 refer to modifications of the bathymetry on the same domain. rev 3.1.3 is the third iteration of the runoff corresponding to 3.1 bathymetric file.
 
 ### Special procedure for Greenland Runoff.
-  We start from CREG12 runoff file (courtesy of Claude Talandier, LOPS), which was elaborate from J. Bamber data (Ref ?). Both climatological data and internual data were provided ( and Greenland runoff show a tremendous positive trend since the late 90's), but so far we have only worked out the climatology.  
+  We start from CREG12 runoff file (courtesy of Claude Talandier, LOPS), which was elaborate from J. Bamber data (Ref ?). Both climatological data and interannual data were provided ( and Greenland runoff show a tremendous positive trend since the late 90's), but so far we have only worked out the climatology.  
 #### *Fit the common points between CREG12 and eNATL36X (T points)*
+   **Following cropping is related to v2 domain!**
 
   ```
   CREG12(1:1580,1:913) = eNATL36X(193:4930, 1351:4087)
@@ -134,4 +135,6 @@ In this document we present the procedure used for producing the runoff file. ( 
   ```
   A program ([rnf_12_36.exe](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_12_36.f90)) project the eCREG12 data on eCREG36 by expanding
 one eCREG12 grid cell on 9 eCREG36 grid cells. 
-  A combination tmask+2*socoefr shows the points where eCREG36 runoff fall on eNATL36X land points
+  A combination `tmask+2*socoefr` shows the points where eCREG36 runoff fall on eNATL36X land points.  
+  In order to speed up the process of having correct Greenland runoff, **we decided to adapt the Greenland coastline to eCREG36. (TBD)**. Note that having a stable bathymetry (thus a stable coastline) is a blocking point before defining the vertical grid and create the domain_cfg file.
+
