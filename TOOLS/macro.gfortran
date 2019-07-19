@@ -1,0 +1,4 @@
+NETCDF_ROOT=/usr
+NCDF = -I$(NETCDF_ROOT)/include -L$(NETCDF_ROOT)/lib -lnetcdff -lnetcdf
+
+
