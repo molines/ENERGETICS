@@ -38,7 +38,7 @@ if not os.path.isfile(fileout):
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).sossheig
     print "selected area: ", imin, imax, jmin, jmax
     # 3 - Write on disk
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
 
@@ -54,7 +54,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).votemper
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
 
@@ -67,7 +67,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vosaline
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
 
@@ -80,7 +80,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vozocrtx
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
 
@@ -93,7 +93,7 @@ fileout=tgt_name+"_"+tag+"_"+var+".nc"
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1)).vomecrty
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
 
@@ -105,6 +105,6 @@ fileout=tgt_name+"_"+tag+"_"+typset+".nc"
 if not os.path.isfile(fileout):
     data = xr.open_dataset(url+dtaset,decode_cf=True)
     ext_ind = data.isel(x=slice(imin,imax),y=slice(jmin,jmax),time_counter=slice(time,time+1))
-    ext_ind.to_netcdf(fileout, unlimited_dims={'time_counter':True})
+    ext_ind.to_netcdf(fileout)
 
 print fileout+"  done"
