@@ -61,7 +61,7 @@
  The tool has been updated to an operational level (see for example [get_glorys12_nbdy.py](../TOOLS/get_glorys12_nbdy.py) ).  After a first round of extraction we discover that one day is missing between the initial date and 2004-01-01 for gridT, gridU and icemod files. It is OK for grid2D, gridS and gridV. As far as the time-screening of the data is done with record index, this introduced a shift, and required some post adjustment.  On the other hand, `to_netcdf` xarray method is crashing when we force the output to have a time unlimited dimension. Therefore, the 
 conversion is done afterward with a trivial `nco` based script ([add_unlim.sh](../TOOLS/add_unlim.sh)). _TBD : improve the time screening using dates instead of index._  
 
-  Jul. 15 2019 : all BDY and Initial condition relevant glorys12 data on glorys grid (50 levels) are stored on occigen `/scratch/cnt0024/hmg2840/molines/BDY36/` (110Gb).
+  Jul. 15 2019 : all BDY and Initial condition relevant glorys12 data on glorys grid (50 levels) are stored on occigen `/scratch/cnt0024/hmg2840/molines/BDY36/` (110Gb). (mirror on ige-meom-cal1:/mnt/meom/workdir/molines/BDY36).
 
 ### Processing GLORYS12 extraction:
  * Use [SOSIE](https://github.com/brodeau/sosie) for 3D interpolation on eNATL36X grid or subgrid (BDY). 
