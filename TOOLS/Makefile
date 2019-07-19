@@ -13,6 +13,9 @@ ALL: bat_fit mergebat
 bat_fit : bat_fit.f90
 	$(F90) $(FFLAGS) bat_fit.f90 -o bat_fit
 
+bat_patch : bat_patch.f90
+	$(F90) $(FFLAGS) bat_patch.f90 -o bat_patch
+
 
 mergebat : mergebat.f90
 	$(F90) $(FFLAGS) mergebat.f90 -o mergebat
