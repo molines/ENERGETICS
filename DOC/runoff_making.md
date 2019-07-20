@@ -119,9 +119,6 @@ In this document we present the procedure used for producing the runoff file. ( 
    * see the code for details and eventual changes !
    * This procedure produces a runoff.nc file and a screen display of the list of the rivers used in the file. In particular, on the screen output you have access to the runoff value (in mm/day, annual mean) used on each model cell for the rivers (last column): If values are in excess of 150 mm/day, we come back to rivermouth editing in order to better spread the runoff for faulty rivers.
 
-* In the iterative process it is recommended to rename the different modified files with a clear version number.
-  * for eNATL60 we end up with eNATL60_runoff_3.1.3.nc file. Rev 3 refer to the domain of the simulation. Rev 3.1 refer to modifications of the bathymetry on the same domain. rev 3.1.3 is the third iteration of the runoff corresponding to 3.1 bathymetric file.
-
 ### Special procedure for Greenland Runoff.
   We start from CREG12 runoff file (courtesy of Claude Talandier, LOPS), which was elaborate from J. Bamber data (Ref ?). Both climatological data and interannual data were provided ( and Greenland runoff show a tremendous positive trend since the late 90's), but so far we have only worked out the climatology.  
 #### *Fit the common points between CREG12 and eNATL36X (T points)*
@@ -135,6 +132,34 @@ In this document we present the procedure used for producing the runoff file. ( 
   ```
   A program ([rnf_12_36.exe](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_12_36.f90)) project the eCREG12 data on eCREG36 by expanding
 one eCREG12 grid cell on 9 eCREG36 grid cells. 
-  A combination `tmask+2*socoefr` shows the points where eCREG36 runoff fall on eNATL36X land points.  
-  In order to speed up the process of having correct Greenland runoff, **we decided to adapt the Greenland coastline to eCREG36. (TBD)**. Note that having a stable bathymetry (thus a stable coastline) is a blocking point before defining the vertical grid and create the domain_cfg file.
+  A combination `combine=tmask+2*socoefr` shows the points where eCREG36 runoff fall on eNATL36X land points.  
+  In order to speed up the process of having correct Greenland runoff, **we decided to adapt the Greenland coastline to eCREG36.** 
+  > Note that having a stable bathymetry (thus a stable coastline) is a blocking point before defining the vertical grid and create the domain_cfg file.  
+ 
+ We worked on the eCREG36 subregion. Using BMGTOOLS for the `combine` variable we were able to edit this variable in order to fill in ocean points laying between the eCREG36 runoff and the actual coastline. At the end of this procedure the edited `combine` variable may have 3 possible values: 1 indicating ocean point w/o runoff, 2 indicating runoff on land, and 3 runoff on common ocean points. In order to work only for the Greenland coast, all combine values  off Greenland coast were set to 1.   
+ The Bathymetry file was then fixed using the `combine` value, filling in the point corresponding to 0, and opening the points (setting a depth of 35m) corresponding to a combine value of 2. This
+was done with the specific program [bat_fit.exe](../TOOLS/bat_fit.f90). With this procedure we end up with a corrected bathymetry/coastline around Greenland.   
+ Always on eCREG36 sub-region, we then worked out the eCREG36_runoff file (sorunoff and socoefr variables) in order to keep only the Greenland contribution ( eCREG36_runoff_Greenland.nc). Then
+a simple sum of the eCREG36_runoff_Greenland.nc and eCREG36_runoff_Dai_Trenberth produced the final runoff file (still on eCREG36 domain).  
+
+> `ncflint -w 1.0,1.0  eCREG36_runoff_Greenland.nc eCREG36_runoff_Dai_Trenberth.nc eCREG36_runoff_final.nc`
+
+ The final action was to patch eNATL36X files (Bathymetry and runoff) with the eCREG26 files. This was done with [bat_patch.exe](../TOOLS/bat_patch.f90)
+
+## Resulting files:
+ We end-up all this tedious procedure with the final bathymetry and runoff files (on domain V2):
+
+ ```
+ eNATL36X_bathy_gebco2014_v2.3.1.nc
+ eNATL36X_runoff_v2.2.3.nc
+ ```
+
+V2 domain was retailed (see [grid_making](./grid_making.md#resizing-of-the-grid) report) to V3 that will be the operational domain. Hence, bathymetry and runoff were also retailed to V3, with Hudson bay filled in, 
+and small adjustments near the open boundaries.
+
+ ```
+ eNATL36X_bathy_gebco2014_v3.3.2.nc
+ eNATL36X_runoff_v3.3.2.nc
+ ```
+
 

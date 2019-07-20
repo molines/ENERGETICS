@@ -41,6 +41,8 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
   G36(5015,3746) = ORCA12(3942, 2612)
   ```
 
+ The **OPERATIONAL** version of coordinates is `eNATL36X_coordinates_time_v3.0.nc`
+
 
 ### Bathymetry
   Bathymetry is created with the nesting tools (`create_bathy.exe`), using the following namelist:
@@ -70,10 +72,26 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
 #### v2.2
  In this file, there were still some unconnected points. So I wrote a new tool ([bat_mark_pool.exe](https://github.com/molines/eNATL60/blob/master/TOOLS/bat_mark_pool.f90)) for the tracking of un-connected points. The cleaned bathymetry after this last treatment is version 2.2 (`eNATL36_bathy_gebco2014_v2.2.nc`). The runoff file was made on the basis of this v2.2 bathymetry ([see more details](./runoff_making.md) )
 
+#### v2.3
+ This is just v2.2 with  Corner rise seamounts deeper than 800 m
+
+#### v2.3.1
+ This is v2.3 but with the Greenland coast adapted to fit CREG12 runoff expanded to 1/36.
+
+#### v3.3
+ This is v2.3 retailed to v3 domain, and with Hudson Bay filled in. Some adjustement near open boudaries
+
+#### v3.3.1
+ This is v2.3.1  retailed to v3 domain, nothing else.
+
+#### v3.3.2
+ This is v3.3.1 with Hudson Bay filled in and some adjusments near open boudaries. **OPERATIONAL**
+
 
 ### Vertical grid 
 
-  We wil take 150 levels already tested by P. Colombo. The corresponding `namdom` block of namelist is :
+  We wil take 150 levels already tested by P. Colombo. The corresponding `namdom` block of namelist is :  
+> _Note that we choose a minimum depth of 35m, just like eNATL60, in view of putting tides in the simulation_
 
   ```
   !-----------------------------------------------------------------------
@@ -84,7 +102,7 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
        nn_closea   =    0      !  remove (=0) or keep (=1) closed seas and lakes (ORCA)
        nn_msh      =    0      !  create (/=0) a mesh file(s) or not (=0)
                                !  if not 0 can be in [1 - 6 ] for drakkar usually 6
-       rn_hmin     =   -3.     !  min depth of the ocean (>0) or min number of ocean level (<0)
+       rn_hmin     =   35.     !  min depth of the ocean (>0) or min number of ocean level (<0)
        rn_e3zps_min=   25.     !  partial step thickness is set larger than the minimum of
        rn_e3zps_rat=    0.2    !  rn_e3zps_min and rn_e3zps_rat*e3t, with 0<rn_e3zps_rat<1
                                !
@@ -124,6 +142,16 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
 
 
 ### Domain_cfg file
+  * Construction performed on occigen:
+  * I used 20 nodes (560 cores). 10 nodes are not enough.
+  * Rebuild the global file with JM tool `mergefile4.exe` (part of the `REBUILD_MPP` DCM tool).
+   * Problem with 1D+time variables (z,t) (TBFixed..) Workaround: copy all _var_\_1d variables from a subdomain file (all the same).
+  * Try to rebuild with rebuild_nemo .. 
+   * Standard rebuild is done without deflation ( and domain_cfg.nc really takes advantage of deflation). 
+   * Use a lot of memory (up to 30.2% of a login node). 
+   * Finally crashed when writing bottom_level variable (Segmentation Fault) (??).
+  * Apply `dcmtk_dom_doc.exe` tool in order to copy the namelist into the domain_cfg file.
+  * **OPERATIONAL** file is `eNATL36X_domain_cfg_v3.3.2.nc` (same version than the operational bathymetric file).
 
 
 ## Atmosphere

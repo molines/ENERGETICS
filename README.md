@@ -19,12 +19,13 @@ Configuration prepared in order to be coupled with WRF at 1/12 degree.
    * xml files
 
 ## Input files: 
+  All input files required for this configuration are/will be available on the [MEOM-OPENDAP server](https://ige-meom-opendap.univ-grenoble-alpes.fr/thredds/catalog/meomopendap/extract/ENERGETICS/catalog.html)
   NEMO4 requires a config file holding the 3D grid with the metrics. In order to prepare this config file, we need :
 ### Coordinates files
   * extracted from ORCA36 provided by Mercator (v1)
   * infered from ORCA12 grid with nesting tools (v2) (see the [grid-Bathymetry making-of](DOC/grid_making.md) document.)
 ### Vertical grid:
-  * use 150 level from Pedro Colombo 1/36 experiment (--> very good overflows at Denmark Strait)  (see the [grid-Bathymetry making-of](DOC/grid_making.md) document.)
+  * use 150 level from Pedro Colombo 1/36 experiment (--> very good overflows at Denmark Strait)  (see the [grid-Bathymetry making-of](DOC/grid_making.md#vertical-grid) document.)
 ### Bathymetry
   * extracted from Mercator ORCA36 (v1.0)
     * poor coastline along all the continents
