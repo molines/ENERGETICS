@@ -14,8 +14,7 @@
 
  * you can obtain this release with the following command
 
-        svn co -r 1587 http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/dev/dev_olga xios-2.5-dev_olga
+        svn co -r 1684 http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/branchs/xios-2.5
 
  * Follow the instruction for compilation with ``make_xios``.
 
- * Soon, test will be performed with a more stable xios version
