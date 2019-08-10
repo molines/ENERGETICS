@@ -71,12 +71,49 @@ NCDF = -I$(NETCDF_INCDIR) -I$(NETCDFF_INCDIR) $(NETCDF_LDFLAGS) $(NETCDFF_LDFLAG
 ## Test with eNATL36X configuration (forced mode).
  * Compilation with DCM OK (!) (`eNATL36X-JZ1`)
  * Retrieving data files from occigen with a ssh tunnel through `ige-meom-cal1.u-ga.fr`. 
+
 ### Many issues at run time:
- * Need to use depopulated core computation (see details later on).
- * Weird messages of file not found for forcing files, indicating that the link to workdir is missing on some compute nodes (this problem was not present with the NNATL12 tests) ( _Need to make a ticket_)
- * Violent explosion in the Med Sea 1/2 hour after cold start, even using a (very) small time step (2s !). The analysis shows spurious values near the bottom on the TS initial conditions.
+  * Need to use depopulated core computation (see details later on).
+  * Weird messages of file not found for forcing files, indicating that the link to workdir is missing on some compute nodes (this problem was not present with the NNATL12 tests) ( _Need to make a ticket_)
+  * Violent explosion in the Med Sea 1/2 hour after cold start, even using a (very) small time step (2s !). The analysis shows spurious values near the bottom on the TS initial conditions.
   * Hacking sosie3 was needed to overcome this problem:
-   1. add a very deep dummy level in the source fields (a copy of last level), in order to deal with target deptht greater than the max source deptht.
-   1. no smoothing in the vertical drowning 
-   1. update of the source mask after the vertical drowning and before the horizontal drowning: If original mask is kept  the effect of the vertical drowing is lost ( _to be discussed_ )
+    1. add a very deep dummy level in the source fields (a copy of last level), in order to deal with target deptht greater than the max source deptht.
+    1. no smoothing in the vertical drowning 
+    1. update of the source mask after the vertical drowning and before the horizontal drowning: If original mask is kept  the effect of the vertical drowing is lost ( _to be discussed_ )
+  * Once initial condition was improved, the simulation ran for a full day with 20 sec time step. 
+
+### Issues when using the  40 cores per nodes
+  * I did many tests for running NEMO+xios on multiples nodes using the 40 cores of each nodes. All tests are crashing with a memory error (which may differ from test to test (?) ): 
+
+
+  ```
+  *** Error in `/gpfsssd/scratch/rech/fqx/rcli002/TMPDIR_eNATL36X-JZ001/./nemo4.exe': malloc(): memory corruption: 0x00000000052dd9e0 ***
+  *** Error in `/gpfsssd/scratch/rech/fqx/rcli002/TMPDIR_eNATL36X-JZ001/./nemo4.exe': malloc(): memory corruption: 0x000000000538b020 ***
+  ```
+
+   or
+
+  ```
+  *** Error in `/gpfsssd/scratch/rech/fqx/rcli002/TMPDIR_eNATL36X-JZ001/./nemo4.exe': corrupted double-linked list: 0x00000000053a3760 ***
+  *** Error in `/gpfsssd/scratch/rech/fqx/rcli002/TMPDIR_eNATL36X-JZ001/./nemo4.exe': free(): corrupted unsorted chunks: 0x000000000537f520 ***
+  ```
+
+   All the error seems to happen in a mppsum statement :
+
+  ```
+  libmpifort.so.12.  00002AAAAB9B6F10  mpi_allreduce_        Unknown  Unknown
+  nemo4.exe          0000000000F95873  lib_mpp_mp_mppsum        5164  lib_mpp.f90
+  nemo4.exe          0000000000FD5C95  mppini_mp_mpp_ini        1008  mppini.f90
+  nemo4.exe          0000000000FE03BC  mppini_mp_mpp_ini         890  mppini.f90
+  nemo4.exe          0000000000FFCD97  mppini_mp_mpp_ini         147  mppini.f90
+  nemo4.exe          000000000041EE1D  nemogcm_mp_nemo_i         352  nemogcm.f90
+  nemo4.exe          000000000041C6D3  nemogcm_mp_nemo_g         138  nemogcm.f90
+  nemo4.exe          000000000041C66D  MAIN__                     18  nemo.f90
+
+  ```
+
+   It is worth noting that this problem was not present with the light version NNATL12.
+
+  * I was able to run the configuration using up to 37 cores per nodes but no more (38 39 and 40 cores/node tests failed with errors as shown above).
+  * In some rare intents, failing situation brought to a freeze in mppini.f90, when computing the best domain decomposition, up to time out but with no error messages.
 
