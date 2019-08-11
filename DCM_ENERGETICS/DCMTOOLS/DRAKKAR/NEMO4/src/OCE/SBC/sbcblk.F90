@@ -142,7 +142,7 @@ MODULE sbcblk
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: sbcblk.F90 10535 2019-01-16 17:36:47Z clem $
+   !! $Id: sbcblk.F90 11317 2019-07-22 08:32:59Z smasson $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -206,11 +206,11 @@ CONTAINS
       !                             !** read bulk namelist  
       REWIND( numnam_ref )                !* Namelist namsbc_blk in reference namelist : bulk parameters
       READ  ( numnam_ref, namsbc_blk, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namsbc_blk in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namsbc_blk in reference namelist' )
       !
       REWIND( numnam_cfg )                !* Namelist namsbc_blk in configuration namelist : bulk parameters
       READ  ( numnam_cfg, namsbc_blk, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namsbc_blk in configuration namelist', lwp )
+902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namsbc_blk in configuration namelist' )
       !
       IF(lwm) WRITE( numond, namsbc_blk )
 
@@ -218,11 +218,11 @@ CONTAINS
       !                             !** read bulk namelist  
       REWIND( numnam_ref )                !* Namelist namsbc_blk in reference namelist : bulk parameters
       READ  ( numnam_ref, namsbc_blk_drk, IOSTAT = ios, ERR = 903)
-903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namsbc_blk_drk in reference namelist', lwp )
+903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namsbc_blk_drk in reference namelist' )
       !
       REWIND( numnam_cfg )                !* Namelist namsbc_blk in configuration namelist : bulk parameters
       READ  ( numnam_cfg, namsbc_blk_drk, IOSTAT = ios, ERR = 904 )
-904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namsbc_blk_drk in configuration namelist', lwp )
+904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namsbc_blk_drk in configuration namelist' )
       !
       IF(lwm) WRITE( numond, namsbc_blk_drk )
 #endif
@@ -238,7 +238,7 @@ CONTAINS
       IF( ioptio /= 1 )   CALL ctl_stop( 'sbc_blk_init: Choose one and only one bulk algorithm' )
       !
       IF( ln_dm2dc ) THEN                 !* check: diurnal cycle on Qsr
-         IF( sn_qsr%nfreqh /= 24 )   CALL ctl_stop( 'sbc_blk_init: ln_dm2dc=T only with daily short-wave input' )
+         IF( sn_qsr%freqh /= 24. )   CALL ctl_stop( 'sbc_blk_init: ln_dm2dc=T only with daily short-wave input' )
          IF( sn_qsr%ln_tint ) THEN 
             CALL ctl_warn( 'sbc_blk_init: ln_dm2dc=T daily qsr time interpolation done by sbcdcy module',   &
                &           '              ==> We force time interpolation = .false. for qsr' )
@@ -262,7 +262,7 @@ CONTAINS
       DO ifpr= 1, jfld
          ALLOCATE( sf(ifpr)%fnow(jpi,jpj,1) )
          IF( slf_i(ifpr)%ln_tint )   ALLOCATE( sf(ifpr)%fdta(jpi,jpj,1,2) )
-         IF( slf_i(ifpr)%nfreqh > 0. .AND. MOD( 3600. * slf_i(ifpr)%nfreqh , REAL(nn_fsbc) * rdt) /= 0. )   &
+         IF( slf_i(ifpr)%freqh > 0. .AND. MOD( NINT(3600. * slf_i(ifpr)%freqh), nn_fsbc * NINT(rdt) ) /= 0 )   &
             &  CALL ctl_warn( 'sbc_blk_init: sbcmod timestep rdt*nn_fsbc is NOT a submultiple of atmospheric forcing frequency.',   &
             &                 '               This is not ideal. You should consider changing either rdt or nn_fsbc value...' )
 

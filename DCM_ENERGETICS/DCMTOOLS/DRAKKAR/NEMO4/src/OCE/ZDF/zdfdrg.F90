@@ -78,7 +78,7 @@ MODULE zdfdrg
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: zdfdrg.F90 10069 2018-08-28 14:12:24Z nicolasmartin $
+   !! $Id: zdfdrg.F90 11317 2019-07-22 08:32:59Z smasson $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -240,10 +240,10 @@ CONTAINS
       !
       REWIND( numnam_ref )                   ! Namelist namdrg in reference namelist
       READ  ( numnam_ref, namdrg, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam( ios , 'namdrg in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam( ios , 'namdrg in reference namelist' )
       REWIND( numnam_cfg )                   ! Namelist namdrg in configuration namelist
       READ  ( numnam_cfg, namdrg, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam( ios , 'namdrg in configuration namelist', lwp )
+902   IF( ios >  0 )   CALL ctl_nam( ios , 'namdrg in configuration namelist' )
       IF(lwm) WRITE ( numond, namdrg )
       !
       IF(lwp) THEN
@@ -346,11 +346,11 @@ CONTAINS
       REWIND( numnam_ref )                   ! Namelist cl_namdrg in reference namelist
       IF(ll_top)   READ  ( numnam_ref, namdrg_top, IOSTAT = ios, ERR = 901)
       IF(ll_bot)   READ  ( numnam_ref, namdrg_bot, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref), lwp )
+901   IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref) )
       REWIND( numnam_cfg )                   ! Namelist cd_namdrg in configuration namelist
       IF(ll_top)   READ  ( numnam_cfg, namdrg_top, IOSTAT = ios, ERR = 902 )
       IF(ll_bot)   READ  ( numnam_cfg, namdrg_bot, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam( ios , TRIM(cl_namcfg), lwp )
+902   IF( ios >  0 )   CALL ctl_nam( ios , TRIM(cl_namcfg) )
       IF(lwm .AND. ll_top)   WRITE ( numond, namdrg_top )
       IF(lwm .AND. ll_bot)   WRITE ( numond, namdrg_bot )
 
@@ -359,11 +359,11 @@ CONTAINS
          REWIND( numnam_ref )
          IF (ll_top)  READ (numnam_ref,namdrg_top_drk, IOSTAT = ios, ERR = 903)
          IF (ll_bot)  READ (numnam_ref,namdrg_bot_drk, IOSTAT = ios, ERR = 903)
-903      IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref)//'_drk', lwp )
+903      IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref)//'_drk' )
          REWIND( numnam_cfg )
          IF (ll_top)  READ (numnam_cfg,namdrg_top_drk, IOSTAT = ios, ERR = 904)
          IF (ll_bot)  READ (numnam_cfg,namdrg_bot_drk, IOSTAT = ios, ERR = 904)
-904      IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref)//'_drk', lwp )
+904      IF( ios /= 0 )   CALL ctl_nam( ios , TRIM(cl_namref)//'_drk' )
          cl_file    = TRIM(cn_dir)//'/'//TRIM(sn_boost%clname)
          cl_varname = sn_boost%clvar
       ENDIF

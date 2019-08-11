@@ -45,7 +45,7 @@ MODULE dtatsd
 
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: dtatsd.F90 10213 2018-10-23 14:40:09Z aumont $ 
+   !! $Id: dtatsd.F90 11317 2019-07-22 08:32:59Z smasson $ 
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -85,19 +85,19 @@ CONTAINS
 #if defined key_drakkar 
       REWIND( numnam_ref )              ! Namelist namtsd in reference namelist : 
       READ  ( numnam_ref, namtsd_drk, IOSTAT = ios, ERR = 903)
-903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtsd_drk in reference namelist', lwp )
+903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtsd_drk in reference namelist' )
       REWIND( numnam_cfg )              ! Namelist namtsd in configuration namelist : Parameters of the run
       READ  ( numnam_cfg, namtsd_drk, IOSTAT = ios, ERR = 904 )
-904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtsd_drk in configuration namelist', lwp )
+904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtsd_drk in configuration namelist' )
       IF(lwm) WRITE ( numond, namtsd_drk )
 
 #else
       REWIND( numnam_ref )              ! Namelist namtsd in reference namelist : 
       READ  ( numnam_ref, namtsd, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtsd in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtsd in reference namelist' )
       REWIND( numnam_cfg )              ! Namelist namtsd in configuration namelist : Parameters of the run
       READ  ( numnam_cfg, namtsd, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtsd in configuration namelist', lwp )
+902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtsd in configuration namelist' )
       IF(lwm) WRITE ( numond, namtsd )
 #endif
 

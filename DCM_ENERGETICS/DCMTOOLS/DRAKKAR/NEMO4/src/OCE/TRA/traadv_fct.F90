@@ -558,10 +558,13 @@ CONTAINS
       DO jj = 2, jpjm1                 ! 2nd order centered at top & bottom
          DO ji = fs_2, fs_jpim1
             ikt = mikt(ji,jj) + 1            ! w-point below the 1st  wet point
+#if defined key_drakkar
 !JMM fix for land values ( to avoid out of bund error when using ikb -1 ... below) 
 !   likely mkbt > 1  except on land (
-!           ikb = mbkt(ji,jj)                !     -   above the last wet point
             ikb = MAX(mbkt(ji,jj),2)                !     -   above the last wet point
+#else
+            ikb = mbkt(ji,jj)                !     -   above the last wet point
+#endif
             !
             zwd (ji,jj,ikt) = 1._wp          ! top
             zwi (ji,jj,ikt) = 0._wp

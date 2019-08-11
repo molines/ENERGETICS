@@ -73,7 +73,7 @@ MODULE trabbl
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: trabbl.F90 10425 2018-12-19 21:54:16Z smasson $
+   !! $Id: trabbl.F90 11317 2019-07-22 08:32:59Z smasson $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -491,21 +491,21 @@ CONTAINS
       !
       REWIND( numnam_ref )              ! Namelist nambbl in reference namelist : Bottom boundary layer scheme
       READ  ( numnam_ref, nambbl, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nambbl in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nambbl in reference namelist' )
       !
       REWIND( numnam_cfg )              ! Namelist nambbl in configuration namelist : Bottom boundary layer scheme
       READ  ( numnam_cfg, nambbl, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam ( ios , 'nambbl in configuration namelist', lwp )
+902   IF( ios >  0 )   CALL ctl_nam ( ios , 'nambbl in configuration namelist' )
       IF(lwm) WRITE ( numond, nambbl )
       !
 #if defined key_drakkar
       REWIND( numnam_ref )              ! Namelist nambbl in reference namelist : Bottom boundary layer scheme
       READ  ( numnam_ref, nambbl_drk, IOSTAT = ios, ERR = 903)
-903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nambbl_drk in reference namelist', lwp )
+903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nambbl_drk in reference namelist' )
       !
       REWIND( numnam_cfg )              ! Namelist nambbl in configuration namelist : Bottom boundary layer scheme
       READ  ( numnam_cfg, nambbl_drk, IOSTAT = ios, ERR = 904 )
-904   IF( ios >  0 )   CALL ctl_nam ( ios , 'nambbl in configuration namelist', lwp )
+904   IF( ios >  0 )   CALL ctl_nam ( ios , 'nambbl in configuration namelist' )
       IF(lwm) WRITE ( numond, nambbl_drk )
       !
 #endif

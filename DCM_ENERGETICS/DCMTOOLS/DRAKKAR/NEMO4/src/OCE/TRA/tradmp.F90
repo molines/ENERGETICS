@@ -66,7 +66,7 @@ MODULE tradmp
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: tradmp.F90 10425 2018-12-19 21:54:16Z smasson $ 
+   !! $Id: tradmp.F90 11317 2019-07-22 08:32:59Z smasson $ 
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -194,20 +194,20 @@ CONTAINS
       !
       REWIND( numnam_ref )   ! Namelist namtra_dmp in reference namelist : T & S relaxation
       READ  ( numnam_ref, namtra_dmp, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtra_dmp in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtra_dmp in reference namelist' )
       !
       REWIND( numnam_cfg )   ! Namelist namtra_dmp in configuration namelist : T & S relaxation
       READ  ( numnam_cfg, namtra_dmp, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtra_dmp in configuration namelist', lwp )
+902   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtra_dmp in configuration namelist' )
       IF(lwm) WRITE ( numond, namtra_dmp )
 #if defined key_drakkar
       REWIND( numnam_ref )   ! Namelist namtra_dmp in reference namelist : T & S relaxation
       READ  ( numnam_ref, namtra_dmp_drk, IOSTAT = ios, ERR = 903)
-903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtra_dmp_drk in reference namelist', lwp )
+903   IF( ios /= 0 )   CALL ctl_nam ( ios , 'namtra_dmp_drk in reference namelist' )
       !
       REWIND( numnam_cfg )   ! Namelist namtra_dmp in configuration namelist : T & S relaxation
       READ  ( numnam_cfg, namtra_dmp_drk, IOSTAT = ios, ERR = 904 )
-904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtra_dmp_drk in configuration namelist', lwp )
+904   IF( ios >  0 )   CALL ctl_nam ( ios , 'namtra_dmp_drk in configuration namelist' )
       IF(lwm) WRITE ( numond, namtra_dmp_drk )
 #endif
       !

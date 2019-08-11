@@ -89,7 +89,7 @@ MODULE icestp
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/ICE 4.0 , NEMO Consortium (2018)
-   !! $Id: icestp.F90 10993 2019-05-17 13:07:59Z clem $
+   !! $Id: icestp.F90 11397 2019-08-02 16:31:52Z clem $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -253,7 +253,7 @@ CONTAINS
       !                                ! Initial sea-ice state
       IF( .NOT. ln_rstart ) THEN              ! start from rest: sea-ice deduced from sst
          CALL ice_istate_init
-         CALL ice_istate
+         CALL ice_istate( nit000 )
       ELSE                                    ! start from a restart file
          CALL ice_rst_read
       ENDIF
@@ -305,10 +305,10 @@ CONTAINS
       !
       REWIND( numnam_ice_ref )      ! Namelist nampar in reference namelist : Parameters for ice
       READ  ( numnam_ice_ref, nampar, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nampar in reference namelist', lwp )
+901   IF( ios /= 0 )   CALL ctl_nam ( ios , 'nampar in reference namelist' )
       REWIND( numnam_ice_cfg )      ! Namelist nampar in configuration namelist : Parameters for ice
       READ  ( numnam_ice_cfg, nampar, IOSTAT = ios, ERR = 902 )
-902   IF( ios > 0 )   CALL ctl_nam ( ios , 'nampar in configuration namelist', lwp )
+902   IF( ios > 0 )   CALL ctl_nam ( ios , 'nampar in configuration namelist' )
       IF(lwm) WRITE( numoni, nampar )
 
 #if defined key_drakkar
@@ -439,8 +439,6 @@ CONTAINS
       hfx_err_rem(:,:) = 0._wp
       hfx_err_dif(:,:) = 0._wp
       wfx_err_sub(:,:) = 0._wp
-      !
-      afx_tot(:,:) = 0._wp   ;
       !
       diag_heat(:,:) = 0._wp ;   diag_sice(:,:) = 0._wp
       diag_vice(:,:) = 0._wp ;   diag_vsnw(:,:) = 0._wp

@@ -91,7 +91,7 @@ MODULE zdftke
 #  include "vectopt_loop_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id: zdftke.F90 10425 2018-12-19 21:54:16Z smasson $
+   !! $Id: zdftke.F90 11317 2019-07-22 08:32:59Z smasson $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -657,11 +657,11 @@ CONTAINS
       !
       REWIND( numnam_ref )              ! Namelist namzdf_tke in reference namelist : Turbulent Kinetic Energy
       READ  ( numnam_ref, namzdf_tke, IOSTAT = ios, ERR = 901)
-901   IF( ios /= 0 ) CALL ctl_nam ( ios , 'namzdf_tke in reference namelist', lwp )
+901   IF( ios /= 0 ) CALL ctl_nam ( ios , 'namzdf_tke in reference namelist' )
 
       REWIND( numnam_cfg )              ! Namelist namzdf_tke in configuration namelist : Turbulent Kinetic Energy
       READ  ( numnam_cfg, namzdf_tke, IOSTAT = ios, ERR = 902 )
-902   IF( ios >  0 ) CALL ctl_nam ( ios , 'namzdf_tke in configuration namelist', lwp )
+902   IF( ios >  0 ) CALL ctl_nam ( ios , 'namzdf_tke in configuration namelist' )
       IF(lwm) WRITE ( numond, namzdf_tke )
       !
       ri_cri   = 2._wp    / ( 2._wp + rn_ediss / rn_ediff )   ! resulting critical Richardson number

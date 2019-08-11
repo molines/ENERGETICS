@@ -13,10 +13,12 @@ MODULE icerst
    !!   ice_rst_write : write restart file 
    !!   ice_rst_read  : read  restart file 
    !!----------------------------------------------------------------------
-   USE ice            ! sea-ice variables
+   USE ice            ! sea-ice: variables
    USE dom_oce        ! ocean domain
+   USE phycst  , ONLY : rt0
    USE sbc_oce , ONLY : nn_fsbc, ln_cpl
-   USE icectl
+   USE iceistate      ! sea-ice: initial state
+   USE icectl         ! sea-ice: control
    !
    USE in_out_manager ! I/O manager
    USE iom            ! I/O manager library
@@ -32,7 +34,7 @@ MODULE icerst
 
    !!----------------------------------------------------------------------
    !! NEMO/ICE 4.0 , NEMO Consortium (2018)
-   !! $Id: icerst.F90 10425 2018-12-19 21:54:16Z smasson $
+   !! $Id: icerst.F90 11402 2019-08-05 15:26:03Z clem $
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
@@ -52,10 +54,11 @@ CONTAINS
       !
       IF( kt == nit000 )   lrst_ice = .FALSE.   ! default definition
 
+      IF( ln_rst_list .OR. nn_stock /= -1 ) THEN
       ! in order to get better performances with NetCDF format, we open and define the ice restart file 
       ! one ice time step before writing the data (-> at nitrst - 2*nn_fsbc + 1), except if we write ice 
       ! restart files every ice time step or if an ice restart file was writen at nitend - 2*nn_fsbc + 1
-      IF( kt == nitrst - 2*nn_fsbc + 1 .OR. nstock == nn_fsbc    &
+      IF( kt == nitrst - 2*nn_fsbc + 1 .OR. nn_stock == nn_fsbc    &
          &                             .OR. ( kt == nitend - nn_fsbc + 1 .AND. .NOT. lrst_ice ) ) THEN
          IF( nitrst <= nitend .AND. nitrst > 0 ) THEN
             ! beware of the format used to write kt (default is i8.8, that should be large enough...)
@@ -83,6 +86,7 @@ CONTAINS
             CALL iom_open( TRIM(clpath)//TRIM(clname), numriw, ldwrt = .TRUE., kdlev = jpl )
             lrst_ice = .TRUE.
          ENDIF
+      ENDIF
       ENDIF
       !
       IF( ln_icectl )   CALL ice_prt( kt, iiceprt, jiceprt, 1, ' - Beginning the time step - ' )   ! control print
