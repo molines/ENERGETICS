@@ -67,6 +67,7 @@ NCDF = -I$(NETCDF_INCDIR) -I$(NETCDFF_INCDIR) $(NETCDF_LDFLAGS) $(NETCDFF_LDFLAG
  * A work around that works was to put all the `xios_server.exe` on a single node, without any `nemo4.exe` on the same node: in this case, no freezing observed! 
  * The problem can be reproduced with light xios test programs, and XIOS gurus (Olga, RÃmi) are tackling this blocking problem.
  * The option of having xios dedicated nodes is valid only if we can have only a few xios by nodes! (not clear how to perform such a placement).
+ * This problem persists but can be resolved in our case, placing xios_server on dedicated nodes. See below how to perform such a placement. 
 
 ## Test with eNATL36X configuration (forced mode).
  * Compilation with DCM OK (!) (`eNATL36X-JZ1`)
@@ -160,6 +161,41 @@ eliminataion. Instead of using a temporary rcv buffer, I dedided to use `MPI_IN_
   ```
 
    * note that `lib_mpp.F90` contains a generic code for all mppsum subroutines... and I had to take `lib_mpp.f90` from `BLD/ppsrc/nemo`. Need to check id this modif is valid for any `mpi_allreduce`.
+
+## Placing xios_server on separated nodes :
+  The base line to perform such a placement (nemo4.exe and xios_server.exe on different nodes) is to take advantage of the `SLURM_HOSTFILE`environement variable, combined with the `--multiprog` option of srun.
+  * `SLURM_HOSTFILE` point to a `hostfile` file containing as many lines as the total number of MPI tasks (nemo +xios), each line corresponding the a node name.
+  * `--multiprog taskfile` option describes the number of task corresponding respectively to nemo or xios. For example :
+
+   ``` 0-999 ./nemo4.exe
+       1000-1029 ./xios_server.exe
+   ```
+
+  indicate that there will be 1000 nemo4.exe task (from  mpirank 0 to mpirank 999) and 30 xios_server.exe tasks (from mpirank 1000 to mpirank 1029, therefore the total number of tasks being 1030. 
+
+For this example, the hostfile should contains 1030 lines, matching the 1030 MPI tasks. On Jean-Zay there are 40 cores on any computing node, so that a specific node name can be repeated up to 40 times.  Playing with the order of the nodes in the hostfile, we can mimic the binding by node (-m cyclic). This technique is implemented through a bash function (`runcode_mpmd_dp`) available in the [function_4_jean-zay.sh](../DCM_ENERGETICS/RUNTOOLS/lib/function_4_jean-zay.sh)  RUNTOOLS function.
+
+Using this technique, we were able to run various segments of a simulation, without any freezing when finalizing xios.
+
+## Run crash after some days/month of simulation:
+  * We experience a crash of the run after some months of simulation. The crash was intercepted by stpctl procedure, but the only information we get back was that T and S were -infinity and SSH  was NaN...
+  * Trying to debug this point we recompile the code with -fpe0 option and traceback, and we saw that a floating point invalid error was raised in ice_thd.  
+  * We tried to adapt the time step, but without any positive results (decreasing the time-step was causing the program to carsh even earlier !). 
+  * Playing around with the namelist_ice, we found that setting :
+ 
+  ```
+  &namdyn
+  ln_dynRHGADV     = .true.
+  /
+  &namdyn_rhg
+  ln_aEVP       = .true.         !     adaptive rheology (Kimmritz et al. 2016 & 2017)
+  /
+  ```
+
+  permits to avoid the crash. 
+
+  * more tests need to be performed in order to tackle this problem cleanly, but so far we try to produce a year of simulation ( 2004) with this setting.
+
 
  
 
