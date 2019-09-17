@@ -87,6 +87,10 @@ leads to an exact subdomain of the ORCA12 grid.  In order to do so from v2 to v3
 #### v3.3.2
  This is v3.3.1 with Hudson Bay filled in and some adjusments near open boudaries. **OPERATIONAL**
 
+#### v3.3.3
+ This is v3.3.2 corrected for isolated points on Greenland. After few month of run, these 9 points (1/12 grid cell) have an increased SSH (14 m by the end of october), that may cause the model to crash. Those points are just filled (1838:1840,3292:3294) **OPERATIONAL after Sep. 17,2019**. Changed at segment 18 of the run JZ003.  
+ Note that the correction was only done in the domain_cfg file (`eNATL36X_domain_cfg_v3.3.3.nc`)
+
 
 ### Vertical grid 
 
