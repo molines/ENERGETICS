@@ -43,13 +43,13 @@ ndatstp2date()  {
 MarkDownOut ()  {
   cl_fout=$1
   cat << eof > $cl_fout
- | seg  | nit000 | nitend | date_fin | rn_rdt |
- | ---: | ---:   | ---:   | ---:     | ---:   |
+ | seg  | nit000 | nitend | date_fin | rn_rdt | adv_ice |
+ | ---: | ---:   | ---:   | ---:     | ---:   | ---
 eof
 
  for i in $(seq 1 $nseg) ; do
 cat << eof >> $cl_fout
- | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} |
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${adv_ice[$i]}
 eof
  done
                }
@@ -92,6 +92,9 @@ cf_mdout=$CTLDIR/$cf_mdout
 
   for i in $( seq 1 $nseg ) ; do
    rn_rdt[$i]=$(LookInNamelist rn_rdt namelist_oce.${n_t[$i]})
+#ln_adv_Pra or ln_adv_UMx
+   adv_ice[$i]=$(LookInNamelist  ln_adv_Pra namelist_ice.${n_t[$i]})
+   if [ ${adv_ice[$i]} = .false. ] ; then adv_ice[$i]=UMx ; else adv_ice[$i]=PRA ; fi
   done
 
 MarkDownOut $cf_mdout
