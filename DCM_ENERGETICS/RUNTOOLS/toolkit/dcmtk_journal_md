@@ -1,0 +1,98 @@
+#!/bin/bash
+# Scan the list of namelists (ice and oce) and set up a table on MarDown format
+# showing the main characteristics of a run
+# class = @Run performance tools@
+
+usage() {
+      echo
+      echo "USAGE: $( basename $0 ) [-h ] -c CONFCASE  [-o MD-file] "
+      echo
+      echo "  PURPOSE:"
+      echo "      According to CONFCASE, scan the namelists and db files in order"
+      echo "      to set up a table whith configuration parameters. Output in MarkDown." 
+      echo "      This tools assumes that you are working in the DCM environment."
+      echo
+      echo "  ARGUMENTS:"
+      echo "      -c CONFCASE : config-case name to work with"
+      echo
+      echo "  OPTIONS: "
+      echo "    -h                : Display this help message"
+      echo "    -o  MD-file       : name of markdown output file." 
+      echo "                        Default is " $cf_mdout
+      exit 0
+        }
+
+# LookInNamelist returns the value of a variable in the namelist
+#        examples: aht0=$(LookInNamelist aht0 )  <=> aht0=$(LookInNamelist aht0 namelist )
+#                  ln_limdmp=$(LookInNamelist ln_limdmp namelist_ice )
+#                  nit000=$(LookInNamelist nn_it000 namelist_oce.10 ) 
+#        If there is a third argument it is used as a namelist block and the search is
+#        limited to this block :
+#                  ln_tsd_init=$(LookInNamelist ln_tsd_init namelist_cfg namtsd_drk )
+LookInNamelist()    {
+         var=$1
+         znamelist=$2
+         eval grep -e $var $znamelist      | tr -d \' | tr -d \"  | sed -e 's/=/  = /' | awk ' {if ( $1 == str ) print $3 }' str=$1
+                    }
+
+ndatstp2date()  {
+   ndastp=$1
+   echo y${ndastp:0:4}m${ndastp:4:2}d${ndastp:6:2}
+                }
+
+MarkDownOut ()  {
+  cl_fout=$1
+  cat << eof > $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt |
+ | ---: | ---:   | ---:   | ---:     | ---:   |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} |
+eof
+ done
+               }
+
+# --- set -x 
+
+cf_mdout=Journal.md
+narg=$#
+
+if [ $narg = 0 ] ; then usage ; fi
+while getopts :hc:o: opt ; do
+  case $opt in
+    (h) usage ;;
+    (c) CONFCASE=${OPTARG} ;;
+    (o) cf_mdout=${OPTARG} ;;
+    (*) usage ;;
+   esac
+done
+CONFIG=${CONFCASE%-*}
+CASE=${CONFCASE#*-}
+
+ANNEXDIR=$SDIR/${CONFIG}/${CONFCASE}-S/ANNEX
+CTLDIR=$PDIR/RUN_${CONFIG}/${CONFCASE}/CTL
+
+cf_db=$CTLDIR/${CONFCASE}.db
+cf_mdout=$CTLDIR/$cf_mdout
+
+# go to ANNEX dir
+  cd  $ANNEXDIR
+  nseg=$(wc -l $cf_db | awk '{print $1}') ; nseg=$(( nseg - 1 ))   # last line is waiting for next segment
+  for n in $( cat $cf_db | awk '{print $1} ') ; do
+    if [ $n -le $nseg ] ; then
+      n_t[$n]=$n
+      nit000_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $2}' )
+      nitend_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $3}' )
+      datfin_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $4}' )
+      datfin_t[$n]=$(ndatstp2date ${datfin_t[$n]})
+    fi
+  done
+
+  for i in $( seq 1 $nseg ) ; do
+   rn_rdt[$i]=$(LookInNamelist rn_rdt namelist_oce.${n_t[$i]})
+  done
+
+MarkDownOut $cf_mdout
+
