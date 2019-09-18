@@ -48,7 +48,7 @@ while getopts :hl:m:M:s: opt ; do
    esac
 done
 
-rm log_*
+rm  -f log_*
 for n in $(seq $minproc $stpproc $maxproc)  ; do 
    nn=$(printf "%05d" $n)
    # look for the best decomposition in 20 core window around target value
@@ -58,5 +58,5 @@ for n in $(seq $minproc $stpproc $maxproc)  ; do
    cat log_$nn |  sort -k8n | head -2 > ztmp ; mv ztmp log_$nn
 done
 
-python $RUNTOOLS/toolkit/dcmtk_scal_mkrunnemo.py  -n run_nemo.scal.sh -c 28 -x 5
+python $RUNTOOLS/toolkit/dcmtk_scal_mkrunnemo.py  -n run_nemo.scal.sh -c 40 -x 80 -X 80
 
