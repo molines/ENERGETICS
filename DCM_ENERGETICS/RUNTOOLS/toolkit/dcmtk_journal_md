@@ -21,6 +21,7 @@ usage() {
       echo "                        Default is " $cf_mdout
       exit 0
         }
+# ---
 
 # LookInNamelist returns the value of a variable in the namelist
 #        examples: aht0=$(LookInNamelist aht0 )  <=> aht0=$(LookInNamelist aht0 namelist )
@@ -34,12 +35,16 @@ LookInNamelist()    {
          znamelist=$2
          eval grep -e $var $znamelist      | tr -d \' | tr -d \"  | sed -e 's/=/  = /' | awk ' {if ( $1 == str ) print $3 }' str=$1
                     }
+# ---
 
+# Convert ndastp to y....m..d.. format.
 ndatstp2date()  {
    ndastp=$1
    echo y${ndastp:0:4}m${ndastp:4:2}d${ndastp:6:2}
                 }
+# ---
 
+# Output a Markdown file with a table correponding to the journal of the run
 MarkDownOut ()  {
   cl_fout=$1
   cat << eof > $cl_fout
@@ -52,7 +57,16 @@ cat << eof >> $cl_fout
  | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${adv_ice[$i]}
 eof
  done
+# ---
                }
+# For logical value in namelist always return T or F despite the namelist format ( TRUE,true, true etc ...)
+normalize()         {
+               tmp=$(echo $1 | tr 'a-z' 'A-Z' )
+               echo $tmp  | grep -q 'T'
+               if [ $? = 0 ] ; then echo T ; else echo F ; fi
+                    }
+# ---
+
 
 # --- set -x 
 
@@ -92,9 +106,95 @@ cf_mdout=$CTLDIR/$cf_mdout
 
   for i in $( seq 1 $nseg ) ; do
    rn_rdt[$i]=$(LookInNamelist rn_rdt namelist_oce.${n_t[$i]})
+
 #ln_adv_Pra or ln_adv_UMx
    adv_ice[$i]=$(LookInNamelist  ln_adv_Pra namelist_ice.${n_t[$i]})
-   if [ ${adv_ice[$i]} = .false. ] ; then adv_ice[$i]=UMx ; else adv_ice[$i]=PRA ; fi
+   adv_ice[$i]=$( normalize ${adv_ice[$i]} )
+   if [ ${adv_ice[$i]} = T ] ; then adv_ice[$i]=UMx ; else adv_ice[$i]=PRA ; fi
+
+# nn_fsbc
+   nn_fsbc[$i]= $( LookInNamelist nn_fsbc namelist_oce.${n_t[$i]})
+
+# tra_qsr
+  tmp=$( LookInNamelist ln_qsr_rgb namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then tra_qsr[$i]='RGB' ; fi
+  tmp=$( LookInNamelist ln_qsr_2bd namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then tra_qsr[$i]='2BD' ; fi
+  tmp=$( LookInNamelist ln_qsr_bio namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then tra_qsr[$i]='BIO' ; fi
+
+# shlat
+  tmp=$( LookInNamelist rn_shlat  namelist_oce.${n_t[$i]})
+  if [ $tmp = 2 ] ; then 
+      shlat[$i]='NO SLIP'
+  elif [ $tmp = 0 ] ; then 
+      shlat[$i]='FREE SLIP'
+  else
+      shlat[$i]="PARTIAL SLIP: $tmp"
+  fi
+
+  # EOS
+  tmp=$( LookInNamelist ln_teos10 namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='TEOS-10' ; fi
+
+  tmp=$( LookInNamelist ln_eos80 namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='EOS-80' ; fi
+
+  tmp=$( LookInNamelist ln_seos namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='S-EOS' ; fi
+
+  # tra_adv
+  tmp=$( LookInNamelist ln_traadv_OFF namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then tra_adv[$i]='OFF' ; fi
+
+  tmp=$( LookInNamelist ln_traadv_cen namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then 
+     nn_cen_h=$(  LookInNamelist nn_cen_h namelist_oce.${n_t[$i]})
+     nn_cen_v=$(  LookInNamelist nn_cen_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="CEN_${nn_cen_h}_${nn_cen_v}"
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_fct namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then 
+     nn_cen_h=$(  LookInNamelist nn_fct_h namelist_oce.${n_t[$i]})
+     nn_cen_v=$(  LookInNamelist nn_fct_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="FCT_${nn_fct_h}_${nn_ftc_v}" 
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_mus namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     ups=$(  LookInNamelist ln_mus_ups namelist_oce.${n_t[$i]})
+     ups=$( normalize $ups)
+     if [ $ups = T ] ; then
+       tra_adv[$i]="MUSCL_UPS"
+     else
+       tra_adv[$i]="MUSCL"
+     fi
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_ubs namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     nn_ubs_v=$(  LookInNamelist nn_ubs_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="UBS_$nn_ubs_v"
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_qck namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_adv[$i]="QUICKEST"
+  fi
+
   done
 
 MarkDownOut $cf_mdout
