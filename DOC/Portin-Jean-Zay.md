@@ -195,6 +195,10 @@ Using this technique, we were able to run various segments of a simulation, with
   permits to avoid the crash. 
 
   * more tests need to be performed in order to tackle this problem cleanly, but so far we try to produce a year of simulation ( 2004) with this setting.
+  * Previous modification in the namelist_ice were not enough to prevent the model to blow in may. Reducing the time step had no significant effect on the model stability. So we look for advices from Clement Rousset (SI3 expert) and set back the ln_dynALL to true, but use the Prather advection scheme, instead of the default UMx (Ultimate-Machos). Doing so the model get stable and we were able to finish the first year of simulation, with a time step of 144 sec...
+  * We decided to repeat the first year (2004) in continuation. We were even able to increase the time step to 180 sec. 
+  * Worth to note that we add to fix a missing month (Jan. 2004) in the SSH bdy-file for the Hudson bdy segment. The problem in building this file comes from a sosie error due to missing nav_lon,nav_lat in the Jan. 2004 Glorys extraction.
+  * We also detect a cluster of 9 points (3x3) isolated on Greenland, where the SSH was raising continuously.  We filled up those 9 points and adapt the domain_cfg file (version 3.3.3) and recompute the masks for coherency.
 
 
  
