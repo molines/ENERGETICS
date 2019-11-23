@@ -74,3 +74,24 @@ conversion is done afterward with a trivial `nco` based script ([add_unlim.sh](.
 
 ### Processing FES2014 tidal map.
   For using the tidal forcing, we need to provide bdy-files for tides, corresponding to the real and imaginary part of the tidal constituentis for sea level, and ocean velocities.  Starting from the bdy-coordinates file, we basically uses the same process used for T, S, U and V, described above.  The major trick was in the preparation of the tidal data from amplitude/phase data base. 
+
+  Original files provided by F. Lyard are gridded fields ( 5761 x 2881 ) (1/16 deg Lon/lat). Each tidal constituent correspond to 1 file, with amplitudes and phases for elevation ( elevation_a, elevation_G), eastward velocity component ( eastward_a, eastward_G) and westward velocity component (westward_a, westward_G). There are 34 tidal components, coming from  FES2014b simulation.
+
+  * Diurnal : K1, O1, J1, P1, Q1, S1 (6 waves)
+  * Semi-diurnal : M2, S2, N2, K2, L2, 2N2, E2, Mu2, Nu2, La2, T2, MKS2, R2 (13 waves)
+  * 1/3 diurnal : M3 (1 wave)
+  * 1/4 diurnal : M4,  MN4, MS4, N4, S4 (5 waves)
+  * 1/6 diurnal : M6 (1 wave)
+  * 1/8 diurnal : M8 (1 wave)
+  * Long-period : Msf, MSqm, Mf, Mm, Mtm, Sa, Ssa (7 waves)
+
+ In our simulation we will limit the spectrum to the main tidal components (see later).
+
+#### Transforming amplitude, phase to real/imaginary parts.
+  This is done with the program tid_conv_ri from JMM TIDAL_TOOLS
+  We proceed the original files (on FES2014b grid) and ends up with elevation, eastward and westward variables in separated files, containing <var>_real, <var>_imag.
+
+#### Interpolation on eNATL36x Grid
+  This is done using sosie and considering that elevation is a scalar, both real part and imaginary part, and (eastward,westward) forms a vector, needing a rotation to match the model I,J axis.
+
+#### Adapting the results of the preprocessing to NEMO requirements
