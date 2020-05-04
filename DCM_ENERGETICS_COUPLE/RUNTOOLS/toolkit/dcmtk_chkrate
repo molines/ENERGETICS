@@ -1,0 +1,44 @@
+#!/bin/bash
+# Give the integration rate (stp/min) for the first 180 step of a run
+# from a DRAKKAR nemo_xxx.o job output
+# class = @Run performance tools@
+
+usage() {
+      echo
+      echo "USAGE: $( basename $0 ) [-h ] [-n job.o rootname]"
+      echo
+      echo "  PURPOSE:"
+      echo "      Scans all the nemo_occigen.o* files in the current directory and "
+      echo "      computes the running speed of the model during the first 180 timesteps "
+      echo
+      echo "  ARGUMENTS:"
+      echo "      No arguments, scan default nemo_occigen.o* file"
+      echo
+      echo "  OPTIONS: "
+      echo "    -h                : Display this help message"
+      echo "    -n job.o_rootname : Use rootname instead of nemo_occigen for the name of"
+      echo "                        the job output file."
+      exit 0
+        }
+
+rootname=nemo_occigen
+while getopts :hn: opt ; do
+  case $opt in
+    (h) usage ;;
+    (n) rootname=${OPTARG} ;;
+    (*) usage ;;
+   esac
+done
+
+
+i=0
+for file in $rootname.o*; do
+   i=$(( i+1 )) 
+   if [ $i = 1 ]; then
+      dcmtk_rate -s 180 -b 1 -f $file -v -l > ztmprate
+   else
+      dcmtk_rate -s 180 -b 1 -f $file -v >> ztmprate
+   fi
+done
+
+cat ztmprate

@@ -1,0 +1,447 @@
+#!/bin/bash
+# Scan the list of namelists (ice and oce) and set up a table on MarDown format
+# showing the main characteristics of a run
+# class = @Run performance tools@
+
+usage() {
+      echo
+      echo "USAGE: $( basename $0 ) [-h ] -c CONFCASE  [-o MD-file] "
+      echo
+      echo "  PURPOSE:"
+      echo "      According to CONFCASE, scan the namelists and db files in order"
+      echo "      to set up a table whith configuration parameters. Output in MarkDown." 
+      echo "      This tools assumes that you are working in the DCM environment."
+      echo
+      echo "  ARGUMENTS:"
+      echo "      -c CONFCASE : config-case name to work with"
+      echo
+      echo "  OPTIONS: "
+      echo "    -h                : Display this help message"
+      echo "    -o  MD-file       : name of markdown output file." 
+      echo "                        Default is " $cf_mdout
+      exit 0
+        }
+# ---
+
+# LookInNamelist returns the value of a variable in the namelist
+#        examples: aht0=$(LookInNamelist aht0 )  <=> aht0=$(LookInNamelist aht0 namelist )
+#                  ln_limdmp=$(LookInNamelist ln_limdmp namelist_ice )
+#                  nit000=$(LookInNamelist nn_it000 namelist_oce.10 ) 
+#        If there is a third argument it is used as a namelist block and the search is
+#        limited to this block :
+#                  ln_tsd_init=$(LookInNamelist ln_tsd_init namelist_cfg namtsd_drk )
+LookInNamelist()    {
+         var=$1
+         znamelist=$2
+         eval grep -e $var $znamelist      | tr -d \' | tr -d \"  | sed -e 's/=/  = /' | awk ' {if ( $1 == str ) print $3 }' str=$1
+                    }
+# ---
+
+# Convert ndastp to y....m..d.. format.
+ndatstp2date()  {
+   ndastp=$1
+   echo y${ndastp:0:4}m${ndastp:4:2}d${ndastp:6:2}
+                }
+# ---
+
+# Output a Markdown file with a table correponding to the journal of the run
+MarkDownOut ()  {
+  cl_fout=$1
+  cat << eof > $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt | tra_adv | tra_ldf  | rn_Ud  | dyn_adv | dyn_vor | dyn_ldf | rn_Uv | SSH | LBC |
+ | ---: | ---:   | ---:   | ---:     | ---:   | ---     | ---      | ---    |  ---    | ---     | ---     |  ---  | --- | --- |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${tra_adv[$i]} | ${tra_ldf[$i]} | ${rn_Ud[$i]} | ${dyn_adv[$i]} | ${dyn_vor[$i]} | ${dyn_ldf[$i]} | ${rn_Uv[$i]} | ${ssh[$i]} | ${shlat[$i]} | 
+eof
+ done
+# ---
+               }
+MarkDownOut_Dyn ()  {
+  cl_fout=$1
+  cat << eof > $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt | dyn_adv | dyn_vor | dyn_ldf | rn_Uv | SSH | LBC |
+ | ---: | ---:   | ---:   | ---:     | ---:   |  ---    | ---     | ---     |  ---  | --- | --- |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${dyn_adv[$i]} | ${dyn_vor[$i]} | ${dyn_ldf[$i]} | ${rn_Uv[$i]} | ${ssh[$i]} | ${shlat[$i]} | 
+eof
+ done
+# ---
+               }
+
+MarkDownOut_Tra ()  {
+  cl_fout=$1
+  cat << eof > $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt | tra_adv | tra_ldf  | rn_Ud  | 
+ | ---: | ---:   | ---:   | ---:     | ---:   | ---     | ---      | ---    |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${tra_adv[$i]} | ${tra_ldf[$i]} | ${rn_Ud[$i]} |
+eof
+ done               }
+# ---
+
+MarkDownOut_Ice ()  {
+  cl_fout=$1
+  cat << eof >  $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt |  adv_ice |
+ | ---: | ---:   | ---:   | ---:     | ---:   |   ---    |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${adv_ice[$i]} | 
+eof
+ done
+# ---
+               }
+MarkDownOut_Misc ()  {
+  cl_fout=$1
+  cat << eof >  $cl_fout
+ | seg  | nit000 | nitend | date_fin | rn_rdt |  nn_fsbc |  qsr |  EOS |
+ | ---: | ---:   | ---:   | ---:     | ---:   |   ---    |  --- |  --- |
+eof
+
+ for i in $(seq 1 $nseg) ; do
+cat << eof >> $cl_fout
+ | ${n_t[$i]}   | ${nit000_t[$i]} |  ${nitend_t[$i]} |  ${datfin_t[$i]} |  ${rn_rdt[$i]} | ${nn_fsbc[$i]} | ${qsr[$i]} | ${eos[$i]} |
+eof
+ done
+# ---
+               }
+# For logical value in namelist always return T or F despite the namelist format ( TRUE,true, true etc ...)
+normalize()         {
+               tmp=$(echo $1 | tr 'a-z' 'A-Z' )
+               echo $tmp  | grep -q 'T'
+               if [ $? = 0 ] ; then echo T ; else echo F ; fi
+                    }
+# ---
+
+
+# --- set -x 
+
+cf_mdout=Journal.md
+narg=$#
+
+if [ $narg = 0 ] ; then usage ; fi
+while getopts :hc:o: opt ; do
+  case $opt in
+    (h) usage ;;
+    (c) CONFCASE=${OPTARG} ;;
+    (o) cf_mdout=${OPTARG} ;;
+    (*) usage ;;
+   esac
+done
+CONFIG=${CONFCASE%-*}
+CASE=${CONFCASE#*-}
+
+ANNEXDIR=$SDIR/${CONFIG}/${CONFCASE}-S/ANNEX
+CTLDIR=$PDIR/RUN_${CONFIG}/${CONFCASE}/CTL
+
+cf_db=$CTLDIR/${CONFCASE}.db
+cf_mdout=$CTLDIR/$cf_mdout
+cf_mdout_tra=${cf_mdout%.md}_tra.md
+cf_mdout_dyn=${cf_mdout%.md}_dyn.md
+cf_mdout_ice=${cf_mdout%.md}_ice.md
+cf_mdout_misc=${cf_mdout%.md}_misc.md
+
+# go to ANNEX dir
+  cd  $ANNEXDIR
+  nseg=$(wc -l $cf_db | awk '{print $1}') ; nseg=$(( nseg - 1 ))   # last line is waiting for next segment
+  for n in $( cat $cf_db | awk '{print $1} ') ; do
+    if [ $n -le $nseg ] ; then
+      n_t[$n]=$n
+      nit000_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $2}' )
+      nitend_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $3}' )
+      datfin_t[$n]=$( cat $cf_db | head -$n |tail -1 | awk '{print $4}' )
+      datfin_t[$n]=$(ndatstp2date ${datfin_t[$n]})
+    fi
+  done
+
+  for i in $( seq 1 $nseg ) ; do
+   rn_rdt[$i]=$(LookInNamelist rn_rdt namelist_oce.${n_t[$i]})
+
+
+# nn_fsbc
+   nn_fsbc[$i]=$( LookInNamelist nn_fsbc namelist_oce.${n_t[$i]})
+
+# qsr
+  tmp=$( LookInNamelist ln_qsr_rgb namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then qsr[$i]='RGB' ; fi
+  tmp=$( LookInNamelist ln_qsr_2bd namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then qsr[$i]='2BD' ; fi
+  tmp=$( LookInNamelist ln_qsr_bio namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then qsr[$i]='BIO' ; fi
+
+# shlat
+  tmp=$( LookInNamelist rn_shlat  namelist_oce.${n_t[$i]})
+  if [ $tmp = 2. ] ; then 
+      shlat[$i]='NO SLIP'
+  elif [ $tmp = 0 ] ; then 
+      shlat[$i]='FREE SLIP'
+  else
+      shlat[$i]="PARTIAL SLIP: $tmp"
+  fi
+
+  # EOS
+  tmp=$( LookInNamelist ln_teos10 namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='TEOS-10' ; fi
+
+  tmp=$( LookInNamelist ln_eos80 namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='EOS-80' ; fi
+
+  tmp=$( LookInNamelist ln_seos namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then eos[$i]='S-EOS' ; fi
+
+  # tra_adv
+  tmp=$( LookInNamelist ln_traadv_OFF namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then tra_adv[$i]='OFF' ; fi
+
+  tmp=$( LookInNamelist ln_traadv_cen namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then 
+     nn_cen_h=$(  LookInNamelist nn_cen_h namelist_oce.${n_t[$i]})
+     nn_cen_v=$(  LookInNamelist nn_cen_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="CEN_${nn_cen_h}_${nn_cen_v}"
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_fct namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then 
+     nn_fct_h=$(  LookInNamelist nn_fct_h namelist_oce.${n_t[$i]})
+     nn_fct_v=$(  LookInNamelist nn_fct_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="FCT_${nn_fct_h}_${nn_fct_v}" 
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_mus namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     ups=$(  LookInNamelist ln_mus_ups namelist_oce.${n_t[$i]})
+     ups=$( normalize $ups)
+     if [ $ups = T ] ; then
+       tra_adv[$i]="MUSCL_UPS"
+     else
+       tra_adv[$i]="MUSCL"
+     fi
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_ubs namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     nn_ubs_v=$(  LookInNamelist nn_ubs_v namelist_oce.${n_t[$i]})
+     tra_adv[$i]="UBS_$nn_ubs_v"
+  fi
+
+  tmp=$( LookInNamelist ln_traadv_qck namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_adv[$i]="QUICKEST"
+  fi
+
+# traldf
+  off=0
+  tmp=$( LookInNamelist ln_traldf_OFF namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="OFF"
+     off=1
+  fi
+
+  if [ $off = 0 ] ; then  # there is an explicit lateral diffusion
+  tmp=$( LookInNamelist ln_traldf_lap namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="LAP-"
+  fi
+
+  tmp=$( LookInNamelist ln_traldf_blp namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="BILAP-"
+  fi
+
+  tmp=$( LookInNamelist ln_traldf_lev namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="${tra_ldf[$i]}LEV"
+  fi
+
+  tmp=$( LookInNamelist ln_traldf_HOR namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="${tra_ldf[$i]}HOR"
+  fi
+
+  tmp=$( LookInNamelist ln_traldf_iso namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     tra_ldf[$i]="${tra_ldf[$i]}ISO"
+  fi
+
+  tmp=$( LookInNamelist ln_traldf_triad namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T  ] ; then
+     tra_ldf[$i]="${tra_ldf[$i]}TRIAD"
+  fi
+     rn_Ud[$i]=$( LookInNamelist rn_Ud namelist_oce.${n_t[$i]})
+  else  # no explict LDF
+     rn_Ud[$i]='N/A'
+  fi
+
+# VVL
+  tmp=$( LookInNamelist ln_linssh namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T  ] ; then
+     ssh[$i]="LIN"
+  else
+     tmp=$( LookInNamelist ln_vvl_zstar namelist_oce.${n_t[$i]})
+     tmp=$( normalize $tmp )
+     if [ $tmp = T  ] ; then
+        ssh[$i]='Z*'
+     fi
+     tmp=$( LookInNamelist ln_vvl_ztilde namelist_oce.${n_t[$i]})
+     tmp=$( normalize $tmp )
+     if [ $tmp = T  ] ; then
+        ssh[$i]='Z~'
+     fi
+  fi
+
+# DYN_ADV
+  off=0
+  tmp=$( LookInNamelist ln_dynadv_OFF namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_adv[$i]='OFF'
+     off=1
+  fi
+  if [ $off = 0 ] ; then
+     tmp=$( LookInNamelist ln_dynadv_vec namelist_oce.${n_t[$i]})
+     tmp=$( normalize $tmp )
+     if [ $tmp = T ] ; then
+        dyn_adv[$i]="VEC"
+        tmp=$( LookInNamelist nn_dynkeg namelist_oce.${n_t[$i]})
+        if [ $nn_dynkeg = 0 ] ; then
+          dyn_adv[$i]="${dyn_adv[$i}}_noH"
+        else
+          dyn_adv[$i]="${dyn_adv[$i}}_Hol"
+        fi
+     fi
+     tmp=$( LookInNamelist ln_dynadv_cen2 namelist_oce.${n_t[$i]})
+     tmp=$( normalize $tmp )
+     if [ $tmp = T ] ; then
+        dyn_adv[$i]="CEN2"
+     fi
+     tmp=$( LookInNamelist ln_dynadv_ubs namelist_oce.${n_t[$i]})
+     tmp=$( normalize $tmp )
+     if [ $tmp = T ] ; then
+        dyn_adv[$i]="UBS"
+     fi
+  fi
+# DYNVOR
+  tmp=$( LookInNamelist ln_dynvor_ene namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='ENE'
+  fi
+  tmp=$( LookInNamelist ln_dynvor_ens namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='ENS'
+  fi
+  tmp=$( LookInNamelist ln_dynvor_mix namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='MIX'
+  fi
+  tmp=$( LookInNamelist ln_dynvor_enT namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='ENT'
+  fi
+  tmp=$( LookInNamelist ln_dynvor_eeT namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='EET'
+  fi
+  tmp=$( LookInNamelist ln_dynvor_een namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_vor[$i]='EEN_STD'
+     nn_een_e3f=$(  LookInNamelist nn_een_e3f namelist_oce.${n_t[$i]})
+     if [ $nn_een_e3f = 1 ] ; then
+        dyn_vor[$i]='EEN_MSK'
+     fi
+  fi
+
+# DYN_LDF
+  off=0
+  tmp=$( LookInNamelist ln_dynldf_OFF namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="OFF"
+     off=1
+  fi
+
+  if [ $off = 0 ] ; then  # there is an explicit lateral diffusion
+  tmp=$( LookInNamelist ln_dynldf_lap namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="LAP-"
+  fi
+
+  tmp=$( LookInNamelist ln_dynldf_blp namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="BILAP-"
+  fi
+
+  tmp=$( LookInNamelist ln_dynldf_lev namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="${dyn_ldf[$i]}LEV"
+  fi
+
+  tmp=$( LookInNamelist ln_dynldf_HOR namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="${dyn_ldf[$i]}HOR"
+  fi
+
+  tmp=$( LookInNamelist ln_dynldf_iso namelist_oce.${n_t[$i]})
+  tmp=$( normalize $tmp )
+  if [ $tmp = T ] ; then
+     dyn_ldf[$i]="${dyn_ldf[$i]}ISO"
+  fi
+
+     rn_Uv[$i]=$( LookInNamelist rn_Uv namelist_oce.${n_t[$i]})
+  else  # no explict LDF
+     rn_Uv[$i]='N/A'
+  fi
+############################################ I C E   M O D E L #####################################"""
+### ICE MODEL
+#ln_adv_Pra or ln_adv_UMx
+   adv_ice[$i]=$(LookInNamelist  ln_adv_Pra namelist_ice.${n_t[$i]})
+   adv_ice[$i]=$( normalize ${adv_ice[$i]} )
+   if [ ${adv_ice[$i]} = T ] ; then adv_ice[$i]=UMx ; else adv_ice[$i]=PRA ; fi
+
+  done
+#MarkDownOut $cf_mdout
+MarkDownOut_Tra $cf_mdout_tra
+MarkDownOut_Dyn $cf_mdout_dyn
+MarkDownOut_Ice $cf_mdout_ice
+MarkDownOut_Misc $cf_mdout_misc
+

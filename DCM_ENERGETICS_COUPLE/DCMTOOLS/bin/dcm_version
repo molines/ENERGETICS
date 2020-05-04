@@ -1,0 +1,89 @@
+#!/bin/bash
+# dcm_version
+# Display the actual version of DCM as pointed by $HOMEDCM
+# display some revision information about this version
+# class = @DCM core functions@
+
+usage() {
+   echo
+   echo "USAGE : $(basename $0) [-h] "
+   echo
+   echo "  PURPOSE: "
+   echo "     Display the actual version of DCM as pointed by \$HOMEDCM"
+   echo "     Display additional revision information on the DCM components."
+   echo
+   echo "  ARGUMENTS:"
+   echo "     none "
+   echo
+   echo "  OPTIONS:"
+   echo "    -h : print this help message and exit."
+   echo
+   exit 0
+        }
+# function for text color
+set_color() {
+r="\033[31m"  # red
+g="\033[32m"  # green
+b="\033[34m"  # blue
+m="\033[35m"  # magenta
+k="\033[0m"   # black/reset
+#
+# more font effect
+bld="\033[1m"
+ita="\033[3m"
+und="\033[4m"
+str="\033[9m"
+            }
+# command parser
+while getopts :h opt ; do
+   case $opt in
+     (h) usage ;;
+     (*) usage ;;
+    esac
+done
+
+
+export LANG=C  # for svn message to be parsed correctly
+set_color
+echo "========================================================="
+printf " Actual $bld${r}DCM$k version is: $bld$r%s$k \n"  $( basename $(dirname $HOMEDCM ) )
+echo 
+printf "$g"
+  echo " origin git repository : "
+  cd $HOMEDCM
+ git remote -v | grep fetch | awk '{print $2}'
+printf "$k"
+echo
+
+printf "$b" 
+  echo " current commit:  "
+git log  | head -4 | grep commit
+git log  | head -4 | grep Date
+  cd - > /dev/null 2>&1
+printf "$k"
+echo "========================================================="
+echo
+printf "Actual $bld${r}NEMOREF$k revision is : \n" 
+
+svn info $REFDIR| grep -e URL -e Revision -e 'Last Changed Rev' -e 'Last Changed Date'
+echo "========================================================="
+
+actual_url=$(svn info $REFDIR| grep -e URL | awk '{print $2}' | head -1 )
+actual_rev=$(svn info $REFDIR| grep -e Revision | awk '{print $2}' )
+
+supported_url=$( cat $HOMEDCM/NEMOREF/getnemoref.sh | grep svn | grep -v '#' | awk '{print $5}')
+supported_rev=$( cat $HOMEDCM/NEMOREF/getnemoref.sh | grep svn | grep -v '#' | awk '{print $4}')
+
+
+if [ $actual_url != $supported_url ] ; then
+   printf "$bld$r WARNING: Actual NEMO4 URL is not in phase with DCM $k \n"
+   printf "$bld$b    Consider to checkout nemo from $supported_url $k \n"
+   printf "$b        (using getnetmoref.sh does the job) $k \n"
+   echo
+fi
+
+if [ $actual_rev != $supported_rev ] ; then
+   printf "$bld$r WARNING: Actual NEMO4 Revision is not in phase with DCM $k\n"
+   printf "$bld$b   You likely need to upgrade to rev $supported_rev $k\n"
+fi
+

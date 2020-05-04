@@ -1,0 +1,58 @@
+#!/bin/bash
+# script to look for missing files between 2 directories
+# class = @File management tools@
+
+usage() {
+  echo
+  echo "USAGE: chkmissing [-h] dir1 dir2"
+  echo 
+  echo "  PURPOSE:"
+  echo "     Try to infer missing files in dir2 from files found in dir1 and vice-versa"
+  echo
+  echo "  ARGUMENTS:"
+  echo "     dir1 dir2 refer to year directories of -S or -MEAN data baser"
+  echo
+  echo "  OPTIONS:"
+  echo "     -h : display this help message"
+  echo
+  exit 0 
+        }
+
+while getopts :h opt ; do
+   case $opt in
+     (h) usage ;;
+     (*) usage ;;
+   esac
+done
+
+shift $((OPTIND - 1 ))
+
+tag1=$1
+tag2=$2
+
+# print usage if no arguments
+if [ ! $tag1 ] ; then usage ; fi
+
+cd $tag1
+n=0
+for f in *.nc ; do
+   g=$( echo $f | sed -e "s/$tag1/$tag2/g")
+   if [ ! -f ../$tag2/$g ] ; then
+     echo $g missing in $tag2
+     n=$(( n + 1 ))
+   fi
+done
+
+echo $n files missing in $tag2
+
+cd ../
+cd $tag2
+n=0
+for f in *.nc ; do
+   g=$( echo $f | sed -e "s/$tag2/$tag1/g")
+   if [ ! -f ../$tag1/$g ] ; then
+     echo $g missing in $tag1
+     n=$(( n + 1 ))
+   fi
+done
+echo $n files missing in $tag1
