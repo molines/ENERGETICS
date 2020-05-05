@@ -14,7 +14,7 @@ Therefore, three different runs were performed, named after Sebastien nomenclatu
   * **now02** was then run  for a little bit more than 3 years (38 months), always starting Jan. 2004. The model suffered numerical instability and exploded by mid March, 2007.
     * Many tests were performed by Sebastien in order to control the instability (_description of tests_), but none results in stabilizing the model.
 
-Model output  are hourly (1h) for 2D fields or daily (1m) for 3D fields. The initial Data Plan was to save full 3D fields at high frequency (probably 3h). For storage space limitations, the idea was to save  only the last years of the simulation (says 2010-2013) at this high frequency. Unfortunatly, we were not able to go beyond 2006.
+Model output  are hourly (1h) for 2D fields or daily (1d) for 3D fields. The initial Data Plan was to save full 3D fields at high frequency (probably 3h). For storage space limitations, the idea was to save  only the last years of the simulation (says 2010-2013) at this high frequency. Unfortunatly, we were not able to go beyond 2006. Monthly average were computed off-line and are partially available. 
 
 ## Data set archived for now00 simulation
 This data set is reduced and probably useless as a major bug was impacting the sea-ice coupling
