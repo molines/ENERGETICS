@@ -1,0 +1,58 @@
+#!/bin/bash
+# dcm_chcase :
+# A usefull tool to change the CASE of a pre-existing configuration, especially
+# in CTL directories.  See also chconfig to change the CONFIG part of the name
+# class = @Preparation tools@
+
+usage() {
+   echo
+   echo "USAGE : $(basename $0) [-h] <OLD-case> <NEW-cas>"
+   echo
+   echo "  PURPOSE: "
+   echo "     A usefull tool to change the CASE of a pre-existing "
+   echo "     configuration, especially in CTL directories.  "
+   echo "     See also chconfig to change the CONFIG part of the name."
+   echo "     These tools are  used internally by dcm_clone_ctl."
+   echo
+   echo "  ARGUMENTS:"
+   echo "    <OLD-case> : case name  to be changed" 
+   echo "    <NEW-case> : name of the actual target case"
+   echo
+   echo "  OPTIONS:"
+   echo "    -h : print this help message and exit."
+   echo
+   exit 0
+        }
+
+# command parser
+while getopts :h opt ; do
+   case $opt in
+     (h) usage ;;
+     (*) ;;
+    esac
+done
+
+shift $(($OPTIND-1)) 
+if [ $# != 2 ] ; then usage ; fi
+
+ old=$1
+ new=$2
+
+for f in $( ls * | grep $old ) ; do
+  g=`echo $f | sed -e "s/$old/$new/g" `
+  mv $f $g
+done
+
+for f  in * ; do
+ sed -e "s/$old/$new/g" $f > tmp
+ mv tmp $f
+done
+
+chmod +x *sh
+
+# restore Old Journal, if any
+if [ -f Journal ] ; then
+ sed -e "s/$new/$old/g" Journal > tmp
+ mv tmp Journal.$old
+fi
+
