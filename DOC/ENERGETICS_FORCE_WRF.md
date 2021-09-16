@@ -156,6 +156,16 @@ simulation !
     * Looking at the forcing files then, we descover that there some areas (in particular Northern Black Sea and Azov Sea that have unrealistic
 forcing fields (*e.g* t2 about 0&nbsp;K !) Original WRF files show almost regular t2 temperature (between 280 and 300&nbsp;K).   
 ==> Need to check the SOSIE procedure (WIP)...
+    * Find a problem in land-sea mask: Grid file for WRF is named `geo_em.d01.nc`. It has various mask related variables. Basicaly,
+2 of them were of interest :`LANDMASK` and `LU_INDEX`.  
+   `LANDMASK` is 1 on ground and 0 on water, including continental waters such
+as rivers or lakes.  An equivalent `SEAMASK` was built just by taking `1 - LANDMASK`, which follows NEMO mask convention 
+(1 on the ocean, 0 on land). [But still the continental waters are marked as 1].   
+  `LU_INDEX` stands for Land Usage Index. It uses 21 different index according to the kind of surface.  Ocean points are marked 17.
+In order to avoid the problem of continental waters, I took the decision to build the land-sea mask from this file, setting to 1 
+(ocean) all points whose usage is marked as 17.  Unfortunatly, in this `LU_INDEX`, Black Sea and Azov Sea are marked 21, which
+correspondonds to lakes.  This is the source of the mistake for having unrealistic values over BSAS.  
+  A new sosie interpolation was done using `SEAMASK` instead of `LU_INDEX = 17`.   
 
 
 
