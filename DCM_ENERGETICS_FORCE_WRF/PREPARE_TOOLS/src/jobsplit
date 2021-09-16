@@ -1,0 +1,39 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=36
+#SBATCH --ntasks-per-node=40
+#SBATCH --threads-per-core=1
+#SBATCH -A cli@cpu
+#SBATCH --hint=nomultithread
+#SBATCH -J JOB_split
+#SBATCH -e zjobs.e%j
+#SBATCH -o zjobs.o%j
+#SBATCH --time=5:30:00
+#SBATCH --exclusive
+
+
+set -x 
+
+DTADIR=../FORCING_REG12
+mkdir -p FORCING_REG12_SPLIT
+cd FORCING_REG12_SPLIT
+ln -sf ../src/splitfold.x ./
+
+n=0
+for var in t2 q2 radlw radsw precip snow pmsl ; do
+      echo $var is being processed ...
+       for f in $DTADIR/${var}*.nc ; do
+          g=$(basename $f)
+          ./splitfold.x -f $f -o $g -v $var -w 762 2744 818 2160 &
+          n=$(( n + 1 ))
+          if [ $n = 36 ] ; then
+             wait
+             n=0
+          fi
+       done
+      echo done for $var
+done
+wait
+
+
+

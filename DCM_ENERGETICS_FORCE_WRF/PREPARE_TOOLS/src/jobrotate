@@ -1,0 +1,37 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=36
+#SBATCH --ntasks-per-node=40
+#SBATCH --threads-per-core=1
+#SBATCH -A cli@cpu
+#SBATCH --hint=nomultithread
+#SBATCH -J JOB_rotate
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=5:30:00
+#SBATCH --exclusive
+
+set -x
+
+mkdir -p WIND_GEO
+
+cd WIND_GEO
+ln -sf ../geo_em.d01.nc ./
+ln -sf ../src/rotateuv.x ./
+
+n=0
+for year in {2004..2006}; do
+DTADIR=/gpfsscratch/rech/cli/rcli002/WRFATL12-now2/WRFATL12-now2-S/1h/$year
+for u in $DTADIR/WRFATL12-now2_y${year}m??_1h_U10.nc ; do
+    v=$( echo $u | sed -s 's/U10/V10/')
+    ugeo=$( echo $(basename $u ) | sed -s 's/U10/ugeo/')
+    vgeo=$( echo $(basename $u ) | sed -s 's/U10/vgeo/')
+    ./rotateuv.x -u $u -v $v -ugeo $ugeo -vgeo $vgeo &
+    n=$(( n+ 1 ))
+    if [ $n = 36 ]; then
+       wait
+       n=0
+    fi
+done
+done
+wait

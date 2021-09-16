@@ -1,0 +1,52 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=36
+#SBATCH --ntasks-per-node=40
+#SBATCH --threads-per-core=1
+#SBATCH -A cli@cpu
+#SBATCH --hint=nomultithread
+#SBATCH -J JOB_
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=4:30:00
+#SBATCH --exclusive
+
+cd /gpfswork/rech/cli/rcli002/RUNS/RUN_eNATL36X/eNATL36X-GJMFOR/CTL/PREPARE_FORCING
+
+year=$1
+
+ATMCONFIG=WRFATL12
+ATMCASE=now2
+ATMCONFCASE=${ATMCONFIG}-${ATMCASE}
+freq=1h
+
+ATMDIR=$DDIR/$ATMCONFCASE/${ATMCONFCASE}-S/$freq/$year
+
+n=0
+for var in  T2 Q2 GLW GSW PSFC RAIN SNOWNCV ; do  # U10 V10 to be rotated first
+  case $var in
+  (T2)      varout=t2     ;;
+  (Q2)      varout=q2     ;;
+  (U10)     varout=u10    ;;
+  (V10)     varout=v10    ;;
+  (GLW)     varout=radlw  ;;
+  (GSW)     varout=radsw  ;;
+  (PSFC)    varout=pmsl   ;;
+  (RAIN)    varout=precip ;;
+  (SNOWNCV) varout=snow   ;;
+  esac
+
+  for month in {01..12} ; do
+     tag=y${year}m${month}
+     for f in $ATMDIR/${ATMCONFCASE}_${tag}_${freq}_$var.nc ; do
+        cat namelist_VAR_36x |  sed -e "s/<VAR>/$var/" -e "s;<INPUT>;$f;" -e "s/<VAROUT>/$varout/" -e "s/<TAG>/${tag}_${freq}/"  > NAMELISTS/namelist_${var}_${tag}
+        ./sosie3.x -f NAMELISTS/namelist_${var}_${tag} &
+        n=$(( n + 1 ))
+        if [ $n = 36 ] ; then
+           wait
+           n=0
+        fi
+     done
+  done
+done
+wait

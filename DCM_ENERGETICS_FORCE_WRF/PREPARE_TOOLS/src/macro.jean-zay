@@ -1,0 +1,4 @@
+# Makefile for splitfold program
+F90 = ifort
+#FFLAGS = -O2 -lnetcdf -lnetcdff -CB -fpe0 -traceback -g -ftrapuv
+FFLAGS = -O2 -lnetcdf -lnetcdff  -traceback -g

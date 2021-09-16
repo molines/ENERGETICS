@@ -1,0 +1,46 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=36
+#SBATCH --ntasks-per-node=40
+#SBATCH --threads-per-core=1
+#SBATCH -A cli@cpu
+#SBATCH --hint=nomultithread
+#SBATCH -J JOB_
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=4:30:00
+#SBATCH --exclusive
+
+cd /gpfswork/rech/cli/rcli002/RUNS/RUN_eNATL36X/eNATL36X-GJMFOR/CTL/PREPARE_FORCING
+mkdir -p NAMELISTS_UV
+
+
+ATMCONFIG=WRFATL12
+ATMCASE=now2
+ATMCONFCASE=${ATMCONFIG}-${ATMCASE}
+freq=1h
+
+ATMDIR=/gpfswork/rech/cli/rcli002/RUNS/RUN_eNATL36X/eNATL36X-GJMFOR/CTL/PREPARE_FORCING/WIND_GEO
+
+n=0
+for year in {2004..2006} ; do
+for var in  ugeo vgeo  ; do  # U10 V10 to be rotated first
+  case $var in
+  (ugeo) tmpnam=namelist_VAR_36x_U ; xy=x ;;
+  (vgeo) tmpnam=namelist_VAR_36x_V ; xy=y ;;
+  esac
+  for month in {01..12} ; do
+     tag=y${year}m${month}
+     for f in $ATMDIR/${ATMCONFCASE}_${tag}_${freq}_$var.nc ; do
+        cat $tmpnam |  sed  -e "s;<INPUT>;$f;"  -e "s/<TAG>/${tag}_${freq}/"  > NAMELISTS_UV/namelist_${tag}_${xy}
+        ./sosie3.x -f NAMELISTS_UV/namelist_${tag}_${xy} &
+        n=$(( n + 1 ))
+        if [ $n = 36 ] ; then
+           wait
+           n=0
+        fi
+     done
+  done
+done
+done
+wait

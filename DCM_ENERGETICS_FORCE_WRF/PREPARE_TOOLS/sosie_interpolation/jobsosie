@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1  
+#SBATCH -A cli@cpu
+#SBATCH -J JOB_
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=20:00:00
+
+cd /gpfswork/rech/cli/rcli002/RUNS/RUN_eNATL36X/eNATL36X-GJMFOR/CTL/PREPARE_FORCING
+./sosie3.x -f namelist_T2_36X

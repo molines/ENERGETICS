@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1  
+#SBATCH -A cli@cpu
+#SBATCH -J JOB_
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=20:00:00
+
+set -x
+cd /gpfswork/rech/cli/rcli002/RUNS/RUN_eNATL36X/eNATL36X-GJMFOR/CTL/PREPARE_FORCING
+./cdfmltmask -f t2_36x.nc2 -m eNATL36X_tmaskutil.nc2 -M tmaskutil -v t2 -noup
