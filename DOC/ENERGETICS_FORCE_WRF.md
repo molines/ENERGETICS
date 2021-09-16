@@ -131,13 +131,19 @@ We process the WRF2D output (hourly) in order to extract the following variables
 atmospheric forcing already on the ocean grid.
     * We considered both options but at the end we decided to use the atmospheric forcing already on the ocean grid. The rationale for doing so is
 that we want to reproduce the coupled run with as few differences as possible. Note that the coupling frequency in the coupled run was 1h and that
-the forcing fields are also available at this freequency.
+the forcing fields are also available at this frequency.
   * Some unit adjustment are necessary for fresh water flux (RAIN and SNOW) [from mm to kg/m2/s].
-  * WRF wind component are given on the WRF grid (art M points). U10 is along I coordinate, and V10 is along J coordinate.
+  * WRF wind component are given on the WRF grid (at M points). U10 is along I coordinate, and V10 is along J coordinate.
     * The local angle of the grid with respect to the North is given in the WRF file describing the grid (SINALPHA, COSALPHA). A specific program was written in order to obtain the u10 (W-E) and V10 (S-N) on the WRF grid, previous the interpolation on NEMO grid. Then during the SOSIE
 interpolation procedure for vectorial fields, the ad-hoc rotation is performed in order to have u10 and v10 along the NEMO grid.
+  * Specific tools of namelist are gathered under the [PREPARE_TOOLS](../DCM_ENERGETICS_FORCE_WRF/PREPARE_TOOLS) directory. 
+    * A copy of the working directory used for preparing the forcing is saved on `jean-zay:STORE/ENERGETICS/PREPARE_FORCING`
 
 ### Interpolation on NEMO eNATL36x grid : SOSIE tool
+  * We use [SOSIE](https://github.com/brodeau/sosie.git) at commit `8630038227c` (June, 9 2021).
+  * When doing interpolation from an irregular grid to another irregular grid, sosie build a specific weight file (sosie_mapping). For eNATL36x
+target grid, it takes several hours (> 10 h) to produce this mapping file. This is done once (the first time), then the file is re-used and 
+interpolation is quite fast. Think about saving the mapping file for further use!
 
 
 
