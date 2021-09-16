@@ -149,12 +149,12 @@ interpolation is quite fast. Think about saving the mapping file for further use
   * We start from restart files (issued by the couple run) September, 30 2004. ( so after 9 month of spinup ) 
   * **eNATL36X-JMFOR** : This experience  was able to  run over 10 days, then it severely crashed. Looking at the code in details, we found that 
 the code version was not exactly the coupled one.
-  * **eNATL36X-JMFOR2** : This experience actually use the very same code than the coupled one (double checked).  And it crash the first day of
+  * **eNATL36X-JMFOR2** : This experience actually use the very same code than the coupled one (double checked).  And it crashed the first day of
 simulation !
     * A second experiment with the same code but DFS5.2 forcing was OK for at least one month of simulation.  
 ==> Clear indication that the problem comes from the forcing files
     * Looking at the forcing files then, we descover that there some areas (in particular Northern Black Sea and Azov Sea that have unrealistic
-forcing fields (*e.g* t2 about 0 K !) Original WRF files show almost regular t2 temperature (between 280 and 300 K).   
+forcing fields (*e.g* t2 about 0&nbsp;K !) Original WRF files show almost regular t2 temperature (between 280 and 300&nbsp;K).   
 ==> Need to check the SOSIE procedure (WIP)...
 
 
