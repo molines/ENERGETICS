@@ -1,0 +1,144 @@
+# ENERGETICS: run forced with WRF output from coupled run (now2)
+## Description:
+This serie of experiments are performed using the exact same NEMO code as the coupled run (now2), but without coupling. For
+atmospheric forcing we use the now2 WRF output, saved hourly. Therefore, from the code side, the only differences are within the
+namelist where we disable atmospheric coupling and enable atmospheric forcing using NCAR bulk formulae.
+
+A preparation work was necessary in order to make the Atmospheric forcing available to NEMO.
+
+## Preparation of the WRF output for forcing NEMO.
+### Choosing relevant WRF output fields.
+We process the WRF2D output (hourly) in order to extract the following variables : (raw extraction is saved on Jean-zay:$STORE/
+  * T2:
+
+  ```
+	float T2(time_counter, y, x) ;
+		T2:long_name = "TEMP at 2 M" ;
+		T2:units = "K" ;
+		T2:online_operation = "average" ;
+		T2:interval_operation = "40 s" ;
+		T2:interval_write = "1 h" ;
+		T2:cell_methods = "time: mean (interval: 40 s)" ;
+		T2:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * Q2
+
+  ```
+	float Q2(time_counter, y, x) ;
+		Q2:long_name = "QV at 2 M" ;
+		Q2:units = "kg kg-1" ;
+		Q2:online_operation = "average" ;
+		Q2:interval_operation = "40 s" ;
+		Q2:interval_write = "1 h" ;
+		Q2:cell_methods = "time: mean (interval: 40 s)" ;
+		Q2:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * U10
+
+  ```
+	float U10(time_counter, y, x) ;
+		U10:long_name = "U at 10 M" ;
+		U10:units = "m s-1" ;
+		U10:online_operation = "average" ;
+		U10:interval_operation = "40 s" ;
+		U10:interval_write = "1 h" ;
+		U10:cell_methods = "time: mean (interval: 40 s)" ;
+		U10:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * V10
+
+  ```
+	float V10(time_counter, y, x) ;
+		V10:long_name = "V at 10 M" ;
+		V10:units = "m s-1" ;
+		V10:online_operation = "average" ;
+		V10:interval_operation = "40 s" ;
+		V10:interval_write = "1 h" ;
+		V10:cell_methods = "time: mean (interval: 40 s)" ;
+		V10:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * PSFC
+
+  ```
+	float PSFC(time_counter, y, x) ;
+		PSFC:long_name = "SFC PRESSURE" ;
+		PSFC:units = "Pa" ;
+		PSFC:online_operation = "average" ;
+		PSFC:interval_operation = "40 s" ;
+		PSFC:interval_write = "1 h" ;
+		PSFC:cell_methods = "time: mean (interval: 40 s)" ;
+		PSFC:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * GLW
+
+  ```
+	float GLW(time_counter, y, x) ;
+		GLW:long_name = "DOWNWARD LONG WAVE FLUX AT GROUND SURFACE" ;
+		GLW:units = "W m-2" ;
+		GLW:online_operation = "average" ;
+		GLW:interval_operation = "40 s" ;
+		GLW:interval_write = "1 h" ;
+		GLW:cell_methods = "time: mean (interval: 40 s)" ;
+		GLW:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * GSW
+
+  ```
+	float GSW(time_counter, y, x) ;
+		GSW:long_name = "NET SHORT WAVE FLUX AT GROUND SURFACE" ;
+		GSW:units = "W m-2" ;
+		GSW:online_operation = "average" ;
+		GSW:interval_operation = "40 s" ;
+		GSW:interval_write = "1 h" ;
+		GSW:cell_methods = "time: mean (interval: 40 s)" ;
+		GSW:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * RAIN
+
+  ```
+	float RAIN(time_counter, y, x) ;
+		RAIN:long_name = "TIME-STEP TOTAL PRECIPITATION" ;
+		RAIN:units = "mm" ;
+		RAIN:online_operation = "average" ;
+		RAIN:interval_operation = "40 s" ;
+		RAIN:interval_write = "1 h" ;
+		RAIN:cell_methods = "time: mean (interval: 40 s)" ;
+		RAIN:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+  * SNOWNCV
+
+  ```
+	float SNOWNCV(time_counter, y, x) ;
+		SNOWNCV:long_name = "TIME-STEP NONCONVECTIVE SNOW AND ICE" ;
+		SNOWNCV:units = "mm" ;
+		SNOWNCV:online_operation = "average" ;
+		SNOWNCV:interval_operation = "40 s" ;
+		SNOWNCV:interval_write = "1 h" ;
+		SNOWNCV:cell_methods = "time: mean (interval: 40 s)" ;
+		SNOWNCV:coordinates = "time_centered nav_lat nav_lon" ;
+  ```
+
+### Required processing:
+  * NEMO requires either atmospheric forcing on a regular longitude/latitude grid (then using weight files for interpolation 'on the fly') or
+atmospheric forcing already on the ocean grid.
+    * We considered both options but at the end we decided to use the atmospheric forcing already on the ocean grid. The rationale for doing so is
+that we want to reproduce the coupled run with as few differences as possible. Note that the coupling frequency in the coupled run was 1h and that
+the forcing fields are also available at this freequency.
+  * Some unit adjustment are necessary for fresh water flux (RAIN and SNOW) [from mm to kg/m2/s].
+  * WRF wind component are given on the WRF grid (art M points). U10 is along I coordinate, and V10 is along J coordinate.
+    * The local angle of the grid with respect to the North is given in the WRF file describing the grid (SINALPHA, COSALPHA). A specific program was written in order to obtain the u10 (W-E) and V10 (S-N) on the WRF grid, previous the interpolation on NEMO grid. Then during the SOSIE
+interpolation procedure for vectorial fields, the ad-hoc rotation is performed in order to have u10 and v10 along the NEMO grid.
+
+### Interpolation on NEMO eNATL36x grid : SOSIE tool
+
+
+
+
