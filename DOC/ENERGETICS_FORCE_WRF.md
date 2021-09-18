@@ -153,9 +153,9 @@ the code version was not exactly the coupled one.
 simulation !
     * A second experiment with the same code but DFS5.2 forcing was OK for at least one month of simulation.  
 ==> Clear indication that the problem comes from the forcing files
-    * Looking at the forcing files then, we descover that there some areas (in particular Northern Black Sea and Azov Sea that have unrealistic
+    * Looking at the forcing files then, we discover that there are some areas (in particular Northern Black Sea and Azov Sea that have unrealistic
 forcing fields (*e.g* t2 about 0&nbsp;K !) Original WRF files show almost regular t2 temperature (between 280 and 300&nbsp;K).   
-==> Need to check the SOSIE procedure (WIP)...
+==> Need to check the SOSIE procedure ...
     * Find a problem in land-sea mask: Grid file for WRF is named `geo_em.d01.nc`. It has various mask related variables. Basicaly,
 2 of them were of interest :`LANDMASK` and `LU_INDEX`.  
    `LANDMASK` is 1 on ground and 0 on water, including continental waters such
