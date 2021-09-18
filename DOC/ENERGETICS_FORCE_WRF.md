@@ -144,6 +144,12 @@ interpolation procedure for vectorial fields, the ad-hoc rotation is performed i
   * When doing interpolation from an irregular grid to another irregular grid, sosie build a specific weight file (sosie_mapping). For eNATL36x
 target grid, it takes several hours (> 10 h) to produce this mapping file. This is done once (the first time), then the file is re-used and 
 interpolation is quite fast. Think about saving the mapping file for further use!
+  * Sosie requires information on both the source grid (WRF) and the target grid (NEMO eNATL36X):
+    * for NEMO, `mesh_mask.nc` fiel hold all the required information
+    * for WRF, information is in `geo_em.d01.nc` file but is not directly usable by sosie. In particular, we took lon/lat of grid points directly
+from `nav_lon` and `nav_lat` variables in data files. For the land-sea mask, required for drowning the input WRF fields (it is important for
+ocean forcing NOT to use information from land. Drowning procedure extends ocean values to land, previous spatial interpolation.   
+WRF provide `SEAMASK` and `LU_INDEX`. See below for details.
 
 ## Running the experiment
   * We start from restart files (issued by the couple run) September, 30 2004. ( so after 9 month of spinup ) 
@@ -166,6 +172,8 @@ In order to avoid the problem of continental waters, I took the decision to buil
 (ocean) all points whose usage is marked as 17.  Unfortunatly, in this `LU_INDEX`, Black Sea and Azov Sea are marked 21, which
 correspondonds to lakes.  This is the source of the mistake for having unrealistic values over BSAS.  
   A new sosie interpolation was done using `SEAMASK` instead of `LU_INDEX = 17`.   
+==> After this new interpolation, BSAS system looks regular !
+  * **eNATK36X-JMFOR3** : this is the equivalent of JMFOR2 but with corrected forcing files.
 
 
 
