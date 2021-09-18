@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=36
+#SBATCH --threads-per-core=1
+#SBATCH -A cli@cpu
+#SBATCH --hint=nomultithread
+#SBATCH -J JOB_
+#SBATCH -e zjob.e%j
+#SBATCH -o zjob.o%j
+#SBATCH --time=5:30:00
+
+if [ $# = 0 ] ; then
+   echo "USAGE :  jobprecip YEAR "
+   exit 0
+fi
+
+
+y=$1
+for f in precip*y${y}m??.nc ; do
+   ./cdfscale -d 3600. -f $f -v precip &
+   n=$(( n + 1 ))
+   if [ $n = 36 ] ; then
+     wait
+     n=0
+   fi
+done
+wait
