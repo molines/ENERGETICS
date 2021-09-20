@@ -173,7 +173,8 @@ In order to avoid the problem of continental waters, I took the decision to buil
 correspondonds to lakes.  This is the source of the mistake for having unrealistic values over BSAS.  
   A new sosie interpolation was done using `SEAMASK` instead of `LU_INDEX = 17`.   
 ==> After this new interpolation, BSAS system looks regular !
-  * **eNATK36X-JMFOR3** : this is the equivalent of JMFOR2 but with corrected forcing files.
+  * **eNATK36X-JMFOR3** : this is the equivalent of JMFOR2 but with corrected forcing files.  
+This run, starting Oct.1,2004 seems to be stable...  Just need to adjust xml file_def_nemo-oce.xml for DRAKKAR standards and reconstruction.
 
 
 
