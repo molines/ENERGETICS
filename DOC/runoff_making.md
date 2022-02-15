@@ -86,7 +86,7 @@ In this document we present the procedure used for producing the runoff file. ( 
  
  ### Mask the resulting rivermouth file.
   * When building the rivermouth file with BMGTOOLS, we do not take care of the coastline. So it is mandatory to mask the resulting file in order to keep only ocean points in the file. Otherwise an error will be done when computing the runoff amount on model cells.
-  * This is done with [rnf_mask](../TOOLS/rnf_mask.f90) program, using the bathymetric file.
+  * This is done with [rnf_mask](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_mask.f90) program, using the bathymetric file.
   
   >   usage :  rnf_mask -d DATA-file -b BATHY-file [-vd VAR-data] [-vb VAR-bathy]
            [-o FILE-out] 
@@ -111,7 +111,7 @@ In this document we present the procedure used for producing the runoff file. ( 
           variables : Bathymetry or VAR-data if specified
 
 ### Compute the river runoff
-  * This is done with [rnf_compute_runoff36](../TOOLS/rnf_compute_runoff36.f90) program.
+  * This is done with [rnf_compute_runoff36](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_compute_runoff36.f90) program.
    * in its actual shape, the program assume hard coded name for files :
      - river_mouth.nc
      - coastal-stns-Vol-monthly.updated-Aug2014.nc for data file
