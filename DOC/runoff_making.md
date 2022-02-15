@@ -1,7 +1,7 @@
 # Preparing runoff file for eNATL36X
   In this simulation, we still emulate the river runoff as a precipitation spread over the rivermouth. This procedure requires to have a 2D file with 2 variables: (1) **sorunoff**  giving the amount of *precip* (kg/m2/s) to add at the rivermouth. This sorunoff variable is in general a monthly climatology. (2)  **socoefr** representing the rivermouths and used as a mask field for specific actions such as, for example, shutting off the SSS restoring on the rivermouth. For historical reason this socoefr variable has values between 0 and 0.5 (In fact either 0 or 0.5).
 
-In this document we present the procedure used for producing the runoff file. ( It is almost the same procedure than the one used in eNATL60, but with some variant). In order not to spread the different pieces of code used for this purpose, all new code are still in the [eNATL60/TOOLS/](https://github.com/molines/blob/master/eNATL60/TOOLS) repository.
+In this document we present the procedure used for producing the runoff file. ( It is almost the same procedure than the one used in eNATL60, but with some variant). In order not to spread the different pieces of code used for this purpose, all new code are still in the [eNATL60/TOOLS/](https://github.com/molines/eNATL60/tree/master/TOOLS) repository.
 
 ## Required information :
  1. Coordinates file for the domain
