@@ -27,7 +27,7 @@ In this document we present the procedure used for producing the runoff file. ( 
   I used `tmask_util` which was renamed `Bathymetry` for BMGTOOLS (!). 
 
 ### Prepare kml file with position of Dai-Trenberth river stations
- * This can be done using the bash script [rnf_mk_kml.ksh](../TOOLS/rnf_mk_kml.ksh). The resulting kml file requires some hand editing because of some garbage characters coming from the Dai and Trenberth netcdf file. 
+ * This can be done using the bash script [rnf_mk_kml.sh](https://github.com/molines/eNATL60/blob/master/TOOLS/rnf_mk_kml.sh). The resulting kml file requires some hand editing because of some garbage characters coming from the Dai and Trenberth netcdf file. 
  * Then in GOOGLE-EARTH you can open this kml file and you will have the Dai-Trenberth stations appearing as pin points. This will be very usefull for next step.
  
 ### Build the rivermouth file using BMGTOOLS.
